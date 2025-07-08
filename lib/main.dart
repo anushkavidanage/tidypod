@@ -24,16 +24,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:solidpod/solidpod.dart';
+import 'package:tidypod/app_screen.dart';
 
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
+import 'package:tidypod/home.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const TidyPod());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TidyPod extends StatelessWidget {
+  const TidyPod({super.key});
 
   // This widget is the root of your application.
   @override
@@ -56,7 +58,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: brightOrange),
+        // scrollbarTheme: ScrollbarThemeData(
+        //   thumbVisibility: WidgetStateProperty.all<bool>(true),
+        // ),
+        // scaffoldBackgroundColor: bgOffWhite,
       ),
       home: buildSolidLogin(),
     );
@@ -164,7 +170,7 @@ Widget buildSolidLogin() {
         link: 'https://github.com/anusii/healthpod/blob/main/README.md',
         loginButtonStyle: LoginButtonStyle(background: brightYellow),
         infoButtonStyle: InfoButtonStyle(background: lightBlue),
-        child: MyHomePage(title: 'TidyPod Home Page'),
+        child: AppScreen(title: topbarText, childPage: HomePage()),
       );
     },
   );

@@ -30,8 +30,17 @@ const lightBlue = Color(0xFF5dbfcf);
 const darkBlue = Color(0xFF30465d);
 const darkOrange = Color(0xFFd97931);
 // const backgroundWhite = Color(0xFFF5F6FC);
-// const lightGray = Color(0xFF8793B2);
-// const lighterGray = Color.fromARGB(255, 243, 243, 243);
-// const bgOffWhite = Color(0xFFF2F4FC);
+const lightGrey = Color(0xFF8793B2);
+const lighterGrey = Color.fromARGB(255, 243, 243, 243);
+const bgOffWhite = Color(0xFFF2F4FC);
 // const kTitleTextColor = Color(0xFF30384D);
 // const warningRed = Colors.red;
+
+extension HexColor on Color {
+  static Color fromHex(String hexString) {
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
+  }
+}

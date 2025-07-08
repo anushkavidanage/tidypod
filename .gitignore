@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# If you're building an application, you may want to check-in your pubspec.lock
+pubspec.lock

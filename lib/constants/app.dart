@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// App related constants
 ///
 /// Copyright (C) 2025, Anushka Vidanage
@@ -22,3 +24,11 @@
 /// Authors: Anushka Vidanage
 
 const String serverUrl = 'https://pods.dev.solidcommunity.au';
+const String appName = 'tidypod';
+const String tasksStr = 'tidypod-tasks';
+const String categoriesStr = 'tidypod-categories';
+const String topbarText = 'TidyPod Task Manager for your Pod';
+
+double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
+double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
+const double desktopWidthThreshold = 960;

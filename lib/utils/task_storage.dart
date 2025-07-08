@@ -1,0 +1,65 @@
+/// A Task Manager app
+///
+/// Copyright (C) 2025, Anushka Vidanage
+///
+/// Licensed under the GNU General Public License, Version 3 (the "License");
+///
+/// License: https://www.gnu.org/licenses/gpl-3.0.en.html
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program.  If not, see <https://www.gnu.org/licenses/>.
+///
+/// Authors: Anushka Vidanage
+
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:solidpod/solidpod.dart';
+import 'package:tidypod/constants/app.dart';
+import 'package:tidypod/models/category.dart';
+// import 'package:tidypod/models/task.dart';
+
+// Local storage class for tasks and categories
+class TaskStorage {
+  // Save tasks to local storage
+  static Future<void> saveTasks(Map<String, Category> categories) async {
+    final dataKey = (await getWebId() as String) + appName;
+    final prefs = await SharedPreferences.getInstance();
+    final jsonTasks = categories.values
+        .map((category) => category.toJson())
+        .toList();
+    prefs.setString(dataKey, json.encode(jsonTasks));
+  }
+
+  // Load tasks and categories
+  static Future<Map<String, Category>> loadTasks() async {
+    final dataKey = (await getWebId() as String) + appName;
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(dataKey);
+
+    if (jsonString == null) return <String, Category>{};
+
+    final List decodedCategories = json.decode(jsonString);
+
+    var categories = <String, Category>{};
+
+    for (var json in decodedCategories) {
+      var category = Category.fromJson(json);
+      String id = json['id'];
+      categories[id] = category;
+    }
+
+    // Return a list containing category list including all the tasks
+    return categories;
+  }
+}
