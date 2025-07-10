@@ -78,13 +78,17 @@ import 'package:appflowy_board/appflowy_board.dart';
 // }
 
 class Task extends AppFlowyGroupItem {
-  final String title;
+  String title;
+  DateTime createdTime;
+  DateTime updatedTime;
   String categoryId;
   bool isDone;
   DateTime? dueDate;
 
   Task({
     required this.title,
+    required this.createdTime,
+    required this.updatedTime,
     required this.categoryId,
     required this.isDone,
     this.dueDate,
@@ -95,6 +99,8 @@ class Task extends AppFlowyGroupItem {
 
   Map<String, dynamic> toJson() => {
     'title': title,
+    'createdTime': createdTime.toString(),
+    'updatedTime': updatedTime.toString(),
     'categoryId': categoryId,
     'dueDate': dueDate?.toIso8601String(),
     'isDone': isDone,
@@ -102,6 +108,8 @@ class Task extends AppFlowyGroupItem {
 
   factory Task.fromJson(Map<String, dynamic> json) => Task(
     title: json['title'],
+    createdTime: DateTime.parse(json['createdTime']),
+    updatedTime: DateTime.parse(json['updatedTime']),
     categoryId: json['categoryId'],
     dueDate: json['dueDate'] == null ? null : DateTime.parse(json['dueDate']),
     isDone: json['isDone'],

@@ -78,37 +78,37 @@ class AppScreenState extends State<AppScreen>
             showDate: true,
           ),
           const SizedBox(width: 20),
-          IconButton(
-            tooltip: 'Create a new note',
-            icon: const Icon(Icons.add_circle, color: Colors.black),
-            onPressed: () {
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => AppScreen(
-              //             childPage: HomePage(),
-              //           )),
-              //   (Route<dynamic> route) =>
-              //       false, // This predicate ensures all previous routes are removed
-              // );
-            },
-          ),
-          const SizedBox(width: 10),
-          IconButton(
-            tooltip: 'My Notes',
-            icon: const Icon(Icons.view_list, color: Colors.black),
-            onPressed: () {
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => AppScreen(
-              //             childPage: ListNotesScreen(),
-              //           )),
-              //   (Route<dynamic> route) =>
-              //       false, // This predicate ensures all previous routes are removed
-              // );
-            },
-          ),
+          // IconButton(
+          //   tooltip: 'Create a new note',
+          //   icon: const Icon(Icons.add_circle, color: Colors.black),
+          //   onPressed: () {
+          //     // Navigator.pushAndRemoveUntil(
+          //     //   context,
+          //     //   MaterialPageRoute(
+          //     //       builder: (context) => AppScreen(
+          //     //             childPage: HomePage(),
+          //     //           )),
+          //     //   (Route<dynamic> route) =>
+          //     //       false, // This predicate ensures all previous routes are removed
+          //     // );
+          //   },
+          // ),
+          // const SizedBox(width: 10),
+          // IconButton(
+          //   tooltip: 'My Notes',
+          //   icon: const Icon(Icons.view_list, color: Colors.black),
+          //   onPressed: () {
+          //     // Navigator.pushAndRemoveUntil(
+          //     //   context,
+          //     //   MaterialPageRoute(
+          //     //       builder: (context) => AppScreen(
+          //     //             childPage: ListNotesScreen(),
+          //     //           )),
+          //     //   (Route<dynamic> route) =>
+          //     //       false, // This predicate ensures all previous routes are removed
+          //     // );
+          //   },
+          // ),
           const SizedBox(width: 10),
         ],
       ),

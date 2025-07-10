@@ -21,8 +21,6 @@
 ///
 /// Authors: Anushka Vidanage
 
-import 'dart:collection';
-
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:tidypod/constants/app.dart';
@@ -359,7 +357,6 @@ class _HomePageState extends State<HomePage> {
       text: task.title,
     );
     DateTime? selectedDate = task.dueDate;
-    String selectedCategory = task.categoryId;
 
     showDialog(
       context: context,
@@ -397,7 +394,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 15),
                   Text(
-                    'Category: $selectedCategory',
+                    'Category: ${task.categoryId}',
                     style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                   SizedBox(height: 10),
@@ -416,12 +413,7 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton(
                 onPressed: () async {
                   if (titleController.text.trim().isNotEmpty) {
-                    _editTask(
-                      task,
-                      titleController.text.trim(),
-                      selectedCategory,
-                      selectedDate,
-                    );
+                    _editTask(task, titleController.text.trim(), selectedDate);
                     Navigator.of(context).pop();
                   }
                   // Navigator.pop(context);
@@ -441,7 +433,12 @@ class _HomePageState extends State<HomePage> {
       name: name,
       items: <AppFlowyGroupItem>[],
     );
-    final localCategory = Category(id: name, taskList: []);
+    final localCategory = Category(
+      id: name,
+      createdTime: DateTime.now(),
+      updatedTime: DateTime.now(),
+      taskList: [],
+    );
 
     setState(() {
       boardController.addGroup(category);
@@ -463,6 +460,8 @@ class _HomePageState extends State<HomePage> {
   void _addTask(String title, String categoryId, DateTime? dueDate) async {
     final task = Task(
       title: title,
+      createdTime: DateTime.now(),
+      updatedTime: DateTime.now(),
       categoryId: categoryId,
       isDone: false,
       dueDate: dueDate,
@@ -474,35 +473,19 @@ class _HomePageState extends State<HomePage> {
     await TaskStorage.saveTasks(_categories);
   }
 
-  void _editTask(
-    Task oldTask,
-    String title,
-    String categoryId,
-    DateTime? dueDate,
-  ) async {
-    // Get the task index from the corresponding category
-    int? taskIndex = _categories[categoryId]?.taskList.indexOf(oldTask);
-
-    // Create a new task
-    final newTask = Task(
-      title: title,
-      categoryId: categoryId,
-      isDone: oldTask.isDone,
-      dueDate: dueDate,
-    );
+  void _editTask(Task oldTask, String title, DateTime? dueDate) async {
     setState(() {
-      _categories[categoryId]?.taskList.removeAt(taskIndex!);
-      // Insert the new task to the correct index
-      _categories[categoryId]?.taskList.insert(taskIndex!, newTask);
+      oldTask.title = title;
+      oldTask.dueDate = dueDate;
+      oldTask.updatedTime = DateTime.now();
     });
-    boardController.removeGroupItem(categoryId, oldTask.id);
-    boardController.insertGroupItem(categoryId, taskIndex!, newTask);
     await TaskStorage.saveTasks(_categories);
   }
 
   void _toggleTask(Task task) {
     setState(() {
       task.isDone = !task.isDone;
+      task.updatedTime = DateTime.now();
     });
     TaskStorage.saveTasks(_categories);
   }

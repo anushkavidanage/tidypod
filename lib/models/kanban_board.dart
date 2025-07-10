@@ -36,7 +36,8 @@ final AppFlowyBoardController boardController = AppFlowyBoardController(
     categories.forEach((k, v) => categoryList.add([k, v]));
 
     // Remove and add items from and to list
-    final category = categoryList.removeAt(fromIndex);
+    Category category = categoryList.removeAt(fromIndex);
+    category.updatedTime = DateTime.now(); // Update time
     categoryList.insert(toIndex, category);
 
     // Create a new category map
@@ -54,6 +55,7 @@ final AppFlowyBoardController boardController = AppFlowyBoardController(
 
     // Get the category
     var category = categories[groupId];
+    category?.updatedTime = DateTime.now(); // Update time
 
     // Update the task list
     final task = category?.taskList.removeAt(fromIndex);
@@ -72,6 +74,9 @@ final AppFlowyBoardController boardController = AppFlowyBoardController(
     // Get the categories
     var removingCategory = categories[fromGroupId];
     var insertingCategory = categories[toGroupId];
+
+    removingCategory?.updatedTime = DateTime.now(); // Update time
+    insertingCategory?.updatedTime = DateTime.now(); // Update time
 
     // Remove the task from the removing category
     final task = removingCategory?.taskList.removeAt(fromIndex);

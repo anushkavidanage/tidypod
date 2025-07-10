@@ -25,12 +25,21 @@ import 'package:tidypod/models/task.dart';
 
 class Category {
   String id;
+  DateTime createdTime;
+  DateTime updatedTime;
   List<Task> taskList;
 
-  Category({required this.id, required this.taskList});
+  Category({
+    required this.id,
+    required this.createdTime,
+    required this.updatedTime,
+    required this.taskList,
+  });
 
   Map<String, dynamic> toJson() => {
     'id': id,
+    'createdTime': createdTime.toString(),
+    'updatedTime': updatedTime.toString(),
     'taskList': taskList.map((task) => task.toJson()).toList(),
   };
 
@@ -40,7 +49,12 @@ class Category {
       var task = Task.fromJson(taskMap);
       taskList.add(task);
     }
-    var category = Category(id: json['id'], taskList: taskList);
+    var category = Category(
+      id: json['id'],
+      createdTime: DateTime.parse(json['createdTime']),
+      updatedTime: DateTime.parse(json['updatedTime']),
+      taskList: taskList,
+    );
     return category;
   }
 }
@@ -48,14 +62,20 @@ class Category {
 final Map<String, Category> initialCategories = {
   'Work': Category(
     id: 'Work',
+    createdTime: DateTime.now(),
+    updatedTime: DateTime.now(),
     taskList: [
       Task(
         title: "Compile ideas for new research",
+        createdTime: DateTime.now(),
+        updatedTime: DateTime.now(),
         categoryId: 'Work',
         isDone: false,
       ),
       Task(
         title: "Meeting with boss",
+        createdTime: DateTime.now(),
+        updatedTime: DateTime.now(),
         categoryId: 'Work',
         isDone: false,
         dueDate: DateTime.parse('2025-07-27'),
@@ -64,11 +84,21 @@ final Map<String, Category> initialCategories = {
   ),
   'Personal': Category(
     id: 'Personal',
+    createdTime: DateTime.now(),
+    updatedTime: DateTime.now(),
     taskList: [
-      Task(title: "Pay utiliy bills", categoryId: 'Personal', isDone: false),
+      Task(
+        title: "Pay utiliy bills",
+        createdTime: DateTime.now(),
+        updatedTime: DateTime.now(),
+        categoryId: 'Personal',
+        isDone: false,
+      ),
 
       Task(
         title: "Schedule dentist appointment",
+        createdTime: DateTime.now(),
+        updatedTime: DateTime.now(),
         categoryId: 'Personal',
         isDone: false,
         dueDate: DateTime.parse('2025-12-07'),
@@ -77,10 +107,20 @@ final Map<String, Category> initialCategories = {
   ),
   'Shopping': Category(
     id: 'Shopping',
+    createdTime: DateTime.now(),
+    updatedTime: DateTime.now(),
     taskList: [
-      Task(title: "Bread", categoryId: 'Shopping', isDone: false),
+      Task(
+        title: "Bread",
+        createdTime: DateTime.now(),
+        updatedTime: DateTime.now(),
+        categoryId: 'Shopping',
+        isDone: false,
+      ),
       Task(
         title: "Milk",
+        createdTime: DateTime.now(),
+        updatedTime: DateTime.now(),
         categoryId: 'Shopping',
         isDone: false,
         dueDate: DateTime.parse('2025-09-15'),
@@ -89,8 +129,16 @@ final Map<String, Category> initialCategories = {
   ),
   'Other': Category(
     id: 'Other',
+    createdTime: DateTime.now(),
+    updatedTime: DateTime.now(),
     taskList: [
-      Task(title: "Learn a new skill", categoryId: 'Other', isDone: false),
+      Task(
+        title: "Learn a new skill",
+        createdTime: DateTime.now(),
+        updatedTime: DateTime.now(),
+        categoryId: 'Other',
+        isDone: false,
+      ),
     ],
   ),
 };
