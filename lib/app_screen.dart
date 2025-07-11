@@ -24,6 +24,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:solidpod/solidpod.dart';
+import 'package:tidypod/widgets/data_sync_icon.dart';
 import 'package:tidypod/widgets/nav_drawer.dart';
 import 'package:version_widget/version_widget.dart';
 
@@ -71,7 +72,8 @@ class AppScreenState extends State<AppScreen>
         centerTitle: true,
         title: Text(widget.title),
         actions: <Widget>[
-          const SizedBox(width: 50),
+          // DataSyncIcon(),
+          // const SizedBox(width: 20),
           VersionWidget(
             version: _appVersion,
             changelogUrl: 'https://github.com/anushkavidanage/tidypod',

@@ -28,6 +28,7 @@ const String appName = 'tidypod';
 const String tasksStr = 'tidypod-tasks';
 const String categoriesStr = 'tidypod-categories';
 const String topbarText = 'TidyPod Task Manager for your Pod';
+const String updateTimeLabel = 'lastUpdated';
 
 double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
 double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;

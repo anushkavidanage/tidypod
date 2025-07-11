@@ -22,6 +22,7 @@
 /// Authors: Anushka Vidanage
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:solidpod/solidpod.dart';
 import 'package:tidypod/app_screen.dart';
@@ -31,7 +32,7 @@ import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/home.dart';
 
 void main() {
-  runApp(const TidyPod());
+  runApp(const ProviderScope(child: TidyPod()));
 }
 
 class TidyPod extends StatelessWidget {

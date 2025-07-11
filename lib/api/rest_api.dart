@@ -34,6 +34,71 @@ import 'package:tidypod/constants/turtle_structures.dart';
 
 // Get the list of notes created by the user.
 
+// At the first instance save the task data as json string into a single file
+// inside the data directory. Also keep track of last change time so that
+// local and server data can be synced.
+
+// Future<Map> loadServerTaskData(BuildContext context, Widget childPage) async {
+//   final loggedIn = await loginIfRequired(context);
+//   String webId = await getWebId() as String;
+//   webId = webId.replaceAll(profCard, '');
+
+//   Map taskMap = {};
+
+//   if (loggedIn) {
+//     final dataDirPath = await getDataDirPath();
+//     final dataDirUrl = await getDirUrl(dataDirPath);
+//     final taskFileUrl = dataDirUrl + myTasksFile;
+
+//     bool resExist = await checkResourceStatus(taskFileUrl);
+
+//     if (resExist) {
+//       String noteContent = await readPod(
+//         fileName.replaceAll(webId, ''),
+//         context,
+//         childPage,
+//       );
+//     }
+//   }
+
+//   return taskMap;
+// }
+
+Future<bool> saveServerTaskData(
+  String taskJsonStr,
+  BuildContext context,
+  Widget childPage,
+) async {
+  final loggedIn = await loginIfRequired(context);
+  String webId = await getWebId() as String;
+  webId = webId.replaceAll(profCard, '');
+
+  // Map taskMap = {};
+
+  if (loggedIn) {
+    // final dataDirPath = await getDataDirPath();
+    // final dataDirUrl = await getDirUrl(dataDirPath);
+    // final taskFileUrl = dataDirUrl + myTasksFile;
+
+    final writeDataStatus = await writePod(
+      myTasksFile,
+      taskJsonStr,
+      context,
+      childPage,
+      // encrypted: false, // save in plain text for now
+    );
+
+    if (writeDataStatus != SolidFunctionCallStatus.success) {
+      // throw Exception('Error occured. Please try again!');
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return false;
+  }
+}
+
 Future<Map> getCategoryList(BuildContext context, Widget childPage) async {
   final loggedIn = await loginIfRequired(context);
   String webId = await getWebId() as String;

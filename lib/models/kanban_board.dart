@@ -29,7 +29,8 @@ import 'package:tidypod/utils/task_storage.dart';
 
 final AppFlowyBoardController boardController = AppFlowyBoardController(
   onMoveGroup: (fromGroupId, fromIndex, toGroupId, toIndex) async {
-    var categories = await TaskStorage.loadTasks();
+    LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+    var categories = loadedTasks.categories;
 
     // Convert to a list
     List categoryList = [];
@@ -51,7 +52,8 @@ final AppFlowyBoardController boardController = AppFlowyBoardController(
     debugPrint('Move item from $fromIndex to $toIndex');
   },
   onMoveGroupItem: (groupId, fromIndex, toIndex) async {
-    var categories = await TaskStorage.loadTasks();
+    LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+    var categories = loadedTasks.categories;
 
     // Get the category
     var category = categories[groupId];
@@ -69,7 +71,8 @@ final AppFlowyBoardController boardController = AppFlowyBoardController(
     debugPrint('Move $groupId:$fromIndex to $groupId:$toIndex');
   },
   onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) async {
-    var categories = await TaskStorage.loadTasks();
+    LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+    var categories = loadedTasks.categories;
 
     // Get the categories
     var removingCategory = categories[fromGroupId];

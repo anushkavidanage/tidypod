@@ -33,33 +33,66 @@ import 'package:tidypod/models/category.dart';
 class TaskStorage {
   // Save tasks to local storage
   static Future<void> saveTasks(Map<String, Category> categories) async {
+    // Get the time of the update
+    final updateTime = DateTime.now();
     final dataKey = (await getWebId() as String) + appName;
     final prefs = await SharedPreferences.getInstance();
     final jsonTasks = categories.values
         .map((category) => category.toJson())
         .toList();
+
+    // Add update time to the json list
+    jsonTasks.add({updateTimeLabel: updateTime.toString()});
+
     prefs.setString(dataKey, json.encode(jsonTasks));
   }
 
   // Load tasks and categories
-  static Future<Map<String, Category>> loadTasks() async {
+  static Future<LoadedTasks> loadTasks() async {
     final dataKey = (await getWebId() as String) + appName;
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(dataKey);
 
-    if (jsonString == null) return <String, Category>{};
+    if (jsonString == null) return LoadedTasks({}, {});
 
     final List decodedCategories = json.decode(jsonString);
 
     var categories = <String, Category>{};
 
+    String updatedTimeStr = '';
+
     for (var json in decodedCategories) {
+      if (json.containsKey(updateTimeLabel)) {
+        updatedTimeStr = json[updateTimeLabel];
+        continue;
+      }
       var category = Category.fromJson(json);
       String id = json['id'];
       categories[id] = category;
     }
 
-    // Return a list containing category list including all the tasks
-    return categories;
+    // Return a LoadedTasks object
+    return LoadedTasks({updateTimeLabel: updatedTimeStr}, categories);
   }
+
+  // Load tasks and categories json string only
+  static Future<String> loadTasksJson() async {
+    final dataKey = (await getWebId() as String) + appName;
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(dataKey);
+
+    if (jsonStr == null) {
+      return '';
+    } else {
+      return jsonStr;
+    }
+  }
+}
+
+// Custom class for loading tasks
+class LoadedTasks {
+  final Map<String, String> updatedTime;
+  final Map<String, Category> categories;
+
+  LoadedTasks(this.updatedTime, this.categories);
 }

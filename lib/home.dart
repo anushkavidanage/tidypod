@@ -23,55 +23,73 @@
 
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
-import 'package:tidypod/constants/app.dart';
-import 'package:tidypod/constants/color_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-import 'package:tidypod/models/kanban_board.dart';
+
 // import 'package:timezone/data/latest.dart' as tz;
 // import 'package:timezone/timezone.dart' as tz;
 
-import 'package:tidypod/models/task.dart';
 // import 'package:tidypod/utils/task_storage.dart';
-import 'package:tidypod/models/category.dart';
-import 'package:tidypod/utils/task_storage.dart';
-import 'package:tidypod/widgets/msg_card.dart';
 // import 'package:tidypod/utils/misc.dart';
+import 'package:tidypod/models/task.dart';
+import 'package:tidypod/models/kanban_board.dart';
+import 'package:tidypod/models/category.dart';
+import 'package:tidypod/utils/data_sync_status.dart';
+import 'package:tidypod/utils/task_queue.dart';
+import 'package:tidypod/utils/task_storage.dart';
+import 'package:tidypod/widgets/data_sync_icon.dart';
+import 'package:tidypod/widgets/msg_card.dart';
 import 'package:tidypod/widgets/task_card.dart';
+import 'package:tidypod/constants/app.dart';
+import 'package:tidypod/constants/color_theme.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   late AppFlowyBoardScrollController boardScrollController;
   late ScrollController scrollController;
   // List<Task> _tasks = [];
   // List<String> _categories = [];
   var _categories = <String, Category>{};
 
+  // bool showSyncStatus = false;
+
   @override
   void initState() {
     boardScrollController = AppFlowyBoardScrollController();
     scrollController = ScrollController();
     _loadTasks();
+    // _syncTasks();
     super.initState();
   }
 
+  // void _syncTasks() async {
+  //   // Simulate a network call or delay
+  //   await Future.delayed(Duration(seconds: 3));
+  //   await syncTaskDataLoop(context, DataSyncIcon(), ref);
+  //   setState(() {
+  //     showSyncStatus = true;
+  //   });
+  // }
+
   void _loadTasks() async {
     bool initialiseTasks = false;
-    Map<String, Category> taskCatList;
+    Map<String, Category> taskCatMap;
 
     if (initialiseTasks) {
-      taskCatList = initialCategories;
+      taskCatMap = initialCategories;
     } else {
-      taskCatList = await TaskStorage.loadTasks();
+      LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+      taskCatMap = loadedTasks.categories;
     }
-    for (Category category in taskCatList.values) {
+    for (Category category in taskCatMap.values) {
       boardController.addGroup(
         AppFlowyGroupData(
           id: category.id,
@@ -85,7 +103,7 @@ class _HomePageState extends State<HomePage> {
     //   boardController.addGroupItem(task.categoryId, task);
     // }
     setState(() {
-      _categories = taskCatList;
+      _categories = taskCatMap;
     });
   }
 
@@ -99,6 +117,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kanban board', style: TextStyle(fontSize: 20)),
+        actions: <Widget>[DataSyncIcon()],
       ),
       body: _categories.isEmpty
           ? Center(

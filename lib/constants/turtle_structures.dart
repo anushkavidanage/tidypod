@@ -23,3 +23,5 @@ library;
 
 // Profile card constant
 const String profCard = 'profile/card#me';
+
+const String myTasksFile = 'mytasks.ttl';
