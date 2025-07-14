@@ -22,23 +22,18 @@
 /// Authors: Anushka Vidanage
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:http/http.dart' as http;
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-Future<bool> isConnectedToInternet() async {
+Future<bool> isInternetAvailable() async {
   var connectivityResult = await Connectivity().checkConnectivity();
 
   if (connectivityResult == ConnectivityResult.none) {
-    // No mobile/WiFi connection at all
+    // No network connection (WiFi/Mobile)
     return false;
   }
 
   // Check actual internet access
-  try {
-    final result = await http
-        .get(Uri.parse('https://www.google.com'))
-        .timeout(const Duration(seconds: 3));
-    return result.statusCode == 200;
-  } catch (_) {
-    return false;
-  }
+  final bool isConnected =
+      await InternetConnectionChecker.instance.hasConnection;
+  return isConnected;
 }

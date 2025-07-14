@@ -21,14 +21,17 @@
 ///
 /// Authors: Anushka Vidanage
 
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solidpod/solidpod.dart';
-import 'package:tidypod/widgets/data_sync_icon.dart';
-import 'package:tidypod/widgets/nav_drawer.dart';
 import 'package:version_widget/version_widget.dart';
 
-class AppScreen extends StatefulWidget {
+import 'package:tidypod/widgets/data_sync_icon.dart';
+import 'package:tidypod/widgets/nav_drawer.dart';
+
+class AppScreen extends ConsumerStatefulWidget {
   /// Initialise widget variables.
   const AppScreen({super.key, required this.childPage, this.title = ''});
 
@@ -39,7 +42,7 @@ class AppScreen extends StatefulWidget {
   AppScreenState createState() => AppScreenState();
 }
 
-class AppScreenState extends State<AppScreen>
+class AppScreenState extends ConsumerState<AppScreen>
     with SingleTickerProviderStateMixin {
   String? _webId;
 
@@ -72,8 +75,8 @@ class AppScreenState extends State<AppScreen>
         centerTitle: true,
         title: Text(widget.title),
         actions: <Widget>[
-          // DataSyncIcon(),
-          // const SizedBox(width: 20),
+          DataSyncIcon(),
+          const SizedBox(width: 20),
           VersionWidget(
             version: _appVersion,
             changelogUrl: 'https://github.com/anushkavidanage/tidypod',

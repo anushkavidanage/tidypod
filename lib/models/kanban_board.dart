@@ -37,9 +37,9 @@ final AppFlowyBoardController boardController = AppFlowyBoardController(
     categories.forEach((k, v) => categoryList.add([k, v]));
 
     // Remove and add items from and to list
-    Category category = categoryList.removeAt(fromIndex);
-    category.updatedTime = DateTime.now(); // Update time
-    categoryList.insert(toIndex, category);
+    var categoryData = categoryList.removeAt(fromIndex);
+    categoryData.last.updatedTime = DateTime.now(); // Update time
+    categoryList.insert(toIndex, categoryData);
 
     // Create a new category map
     Map<String, Category> newCategories = {};

@@ -36,10 +36,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tidypod/models/task.dart';
 import 'package:tidypod/models/kanban_board.dart';
 import 'package:tidypod/models/category.dart';
-import 'package:tidypod/utils/data_sync_status.dart';
-import 'package:tidypod/utils/task_queue.dart';
 import 'package:tidypod/utils/task_storage.dart';
-import 'package:tidypod/widgets/data_sync_icon.dart';
 import 'package:tidypod/widgets/msg_card.dart';
 import 'package:tidypod/widgets/task_card.dart';
 import 'package:tidypod/constants/app.dart';
@@ -49,35 +46,23 @@ class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class HomePageState extends ConsumerState<HomePage> {
   late AppFlowyBoardScrollController boardScrollController;
   late ScrollController scrollController;
   // List<Task> _tasks = [];
   // List<String> _categories = [];
   var _categories = <String, Category>{};
 
-  // bool showSyncStatus = false;
-
   @override
   void initState() {
     boardScrollController = AppFlowyBoardScrollController();
     scrollController = ScrollController();
     _loadTasks();
-    // _syncTasks();
     super.initState();
   }
-
-  // void _syncTasks() async {
-  //   // Simulate a network call or delay
-  //   await Future.delayed(Duration(seconds: 3));
-  //   await syncTaskDataLoop(context, DataSyncIcon(), ref);
-  //   setState(() {
-  //     showSyncStatus = true;
-  //   });
-  // }
 
   void _loadTasks() async {
     bool initialiseTasks = false;
@@ -117,7 +102,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kanban board', style: TextStyle(fontSize: 20)),
-        actions: <Widget>[DataSyncIcon()],
+        // actions: <Widget>[DataSyncIcon()],
       ),
       body: _categories.isEmpty
           ? Center(
@@ -186,10 +171,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                       },
                     );
                   },
-                  groupConstraints: BoxConstraints.tightFor(
-                    width: screenWidth(context) / 4,
-                    height: screenHeight(context),
-                  ),
+                  groupConstraints: screenWidth(context) > 1175
+                      ? BoxConstraints.tightFor(
+                          width: screenWidth(context) / 4,
+                          height: screenHeight(context),
+                        )
+                      : screenWidth(context) > 768
+                      ? BoxConstraints.tightFor(
+                          width: screenWidth(context) / 3,
+                          height: screenHeight(context),
+                        )
+                      : screenWidth(context) > 480
+                      ? BoxConstraints.tightFor(
+                          width: 300,
+                          height: screenHeight(context),
+                        )
+                      : BoxConstraints.tightFor(
+                          width: 300,
+                          height: screenHeight(context),
+                        ),
                   config: config,
                 ),
               ),

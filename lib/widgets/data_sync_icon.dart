@@ -23,14 +23,17 @@
 
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animated_icon/animated_icon.dart';
+import 'package:tidypod/api/rest_api.dart';
 
 import 'package:tidypod/constants/color_theme.dart';
-import 'package:tidypod/utils/data_sync_status.dart';
-import 'package:tidypod/utils/task_queue.dart';
+import 'package:tidypod/utils/data_sync_state.dart';
+import 'package:tidypod/utils/data_sync_process.dart';
 
 // import 'package:riopod/utils/device_status.dart';
 
@@ -42,28 +45,27 @@ class DataSyncIcon extends ConsumerStatefulWidget {
 }
 
 class DataSyncIconState extends ConsumerState<DataSyncIcon> {
+  Timer? _timer;
   bool showSyncStatus = false;
 
   @override
   void initState() {
     super.initState();
-    _syncTasks();
+    _syncTasksLoop();
   }
 
-  void _syncTasks() async {
+  void _syncTasksLoop() async {
     // Simulate a network call or delay
-    await Future.delayed(Duration(seconds: 2));
-    await syncTaskDataLoop(context, DataSyncIcon(), ref);
-    setState(() {
-      showSyncStatus = true;
+    // Wait for three seconds so the widget tree is fully build
+    await Future.delayed(Duration(seconds: 3));
+    // setState(() {
+    //   showSyncStatus = true;
+    // });
+    _timer = Timer.periodic(Duration(seconds: waitSeconds), (Timer timer) {
+      // syncTaskDataProcess(context, DataSyncIcon(), ref);
+      print('running');
     });
   }
-
-  // void updateWidget() {
-  //   setState(() {
-  //     showSyncStatus = true;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {

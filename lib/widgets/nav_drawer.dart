@@ -32,6 +32,7 @@ import 'package:tidypod/home.dart';
 import 'package:tidypod/main.dart';
 
 import 'package:tidypod/utils/misc.dart';
+import 'package:tidypod/tab_view.dart';
 
 class NavDrawer extends StatelessWidget {
   final String webId;
@@ -103,17 +104,15 @@ class NavDrawer extends StatelessWidget {
                   leading: const Icon(Icons.tab_outlined),
                   title: const Text('Tab View'),
                   onTap: () {
-                    // Navigator.pushAndRemoveUntil(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => AppScreen(
-                    //       title: topBarTitle,
-                    //       childPage: ListNotesScreen(),
-                    //     ),
-                    //   ),
-                    //   (Route<dynamic> route) =>
-                    //       false, // This predicate ensures all previous routes are removed
-                    // );
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AppScreen(title: topbarText, childPage: TabView()),
+                      ),
+                      (Route<dynamic> route) =>
+                          false, // This predicate ensures all previous routes are removed
+                    );
                   },
                 ),
                 ListTile(

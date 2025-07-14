@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   fast_rsa
   flutter_secure_storage_windows
-  rive_common
   url_launcher_windows
 )
 

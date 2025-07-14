@@ -25,12 +25,17 @@
 
 library;
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 
 import 'package:solidpod/solidpod.dart';
+import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/turtle_structures.dart';
+import 'package:tidypod/models/category.dart';
+import 'package:tidypod/utils/task_storage.dart';
 
 // Get the list of notes created by the user.
 
@@ -38,31 +43,49 @@ import 'package:tidypod/constants/turtle_structures.dart';
 // inside the data directory. Also keep track of last change time so that
 // local and server data can be synced.
 
-// Future<Map> loadServerTaskData(BuildContext context, Widget childPage) async {
-//   final loggedIn = await loginIfRequired(context);
-//   String webId = await getWebId() as String;
-//   webId = webId.replaceAll(profCard, '');
+Future<LoadedTasks> loadServerTaskData(
+  BuildContext context,
+  Widget childPage,
+) async {
+  final loggedIn = await loginIfRequired(context);
+  String webId = await getWebId() as String;
+  webId = webId.replaceAll(profCard, '');
 
-//   Map taskMap = {};
+  String taskJsonStr = '';
 
-//   if (loggedIn) {
-//     final dataDirPath = await getDataDirPath();
-//     final dataDirUrl = await getDirUrl(dataDirPath);
-//     final taskFileUrl = dataDirUrl + myTasksFile;
+  if (loggedIn) {
+    final dataDirPath = await getDataDirPath();
+    final dataDirUrl = await getDirUrl(dataDirPath);
+    final taskFileUrl = dataDirUrl + myTasksFile;
 
-//     bool resExist = await checkResourceStatus(taskFileUrl);
+    bool resExist = await checkResourceStatus(taskFileUrl);
 
-//     if (resExist) {
-//       String noteContent = await readPod(
-//         fileName.replaceAll(webId, ''),
-//         context,
-//         childPage,
-//       );
-//     }
-//   }
+    if (resExist) {
+      taskJsonStr = await readPod(
+        taskFileUrl.replaceAll(webId, ''),
+        context,
+        childPage,
+      );
+    }
+  }
 
-//   return taskMap;
-// }
+  final decodedCategories = json.decode(taskJsonStr);
+  String updatedTimeStr = '';
+  var categories = <String, Category>{};
+
+  for (var json in decodedCategories) {
+    if (json.containsKey(updateTimeLabel)) {
+      updatedTimeStr = json[updateTimeLabel];
+      continue;
+    }
+    var category = Category.fromJson(json);
+    String id = json['id'];
+    categories[id] = category;
+  }
+
+  // Return a LoadedTasks object
+  return LoadedTasks({updateTimeLabel: updatedTimeStr}, categories);
+}
 
 Future<bool> saveServerTaskData(
   String taskJsonStr,

@@ -27,14 +27,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solidpod/solidpod.dart';
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/models/category.dart';
+import 'package:tidypod/utils/data_sync_process.dart';
 // import 'package:tidypod/models/task.dart';
 
 // Local storage class for tasks and categories
 class TaskStorage {
   // Save tasks to local storage
-  static Future<void> saveTasks(Map<String, Category> categories) async {
+  static Future<void> saveTasks(
+    Map<String, Category> categories, {
+    DateTime? updatedTime,
+  }) async {
     // Get the time of the update
-    final updateTime = DateTime.now();
+    updatedTime ??= DateTime.now();
     final dataKey = (await getWebId() as String) + appName;
     final prefs = await SharedPreferences.getInstance();
     final jsonTasks = categories.values
@@ -42,9 +46,11 @@ class TaskStorage {
         .toList();
 
     // Add update time to the json list
-    jsonTasks.add({updateTimeLabel: updateTime.toString()});
+    jsonTasks.add({updateTimeLabel: updatedTime.toString()});
 
     prefs.setString(dataKey, json.encode(jsonTasks));
+
+    isLocalChanged = true;
   }
 
   // Load tasks and categories
