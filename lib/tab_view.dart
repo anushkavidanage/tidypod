@@ -75,7 +75,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
 
     _categories[name] = localCategory;
     _createTabController(initialIndex: _categories.length - 1);
-    //await TaskStorage.saveTasks(_categories);
+    TaskStorage.saveTasks(_categories);
     if (!init) setState(() {});
   }
 
@@ -117,23 +117,44 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     );
   }
 
-  void _handleEdit(String key) {
+  void _editCategory(String key) {
     _showTabNameDialog(
       initial: _categories[key]!.id,
-      onSubmit: (newName) {
+      onSubmit: (newKey) {
         setState(() {
-          _categories[key]!.id = newName;
+          _categories[key]!.id = newKey;
+          _categories = updateMapKeyPreserveOrder(_categories, key, newKey);
         });
+        TaskStorage.saveTasks(_categories);
       },
     );
   }
 
-  void _handleDelete(String key) {
+  Map<String, Category> updateMapKeyPreserveOrder(
+    Map<String, Category> originalMap,
+    String oldKey,
+    String newKey,
+  ) {
+    Map<String, Category> updatedMap = {};
+
+    originalMap.forEach((key, value) {
+      if (key == oldKey) {
+        updatedMap[newKey] = value;
+      } else {
+        updatedMap[key] = value;
+      }
+    });
+
+    return updatedMap;
+  }
+
+  void _deleteCategory(String key) {
     int currentIndex = _tabController?.index ?? 0;
     _categories.remove(key);
 
     if (_categories.isEmpty) {
       _addCategory("Default Category");
+      TaskStorage.saveTasks(_categories);
       return;
     }
 
@@ -144,6 +165,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     );
 
     setState(() {});
+    TaskStorage.saveTasks(_categories);
   }
 
   void _reorderTabs(int fromIndex, int toIndex) {
@@ -168,6 +190,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
       _categories = newCategories;
       _createTabController(initialIndex: toIndex);
     });
+    TaskStorage.saveTasks(_categories);
   }
 
   Widget _buildCustomTab(int index) {
@@ -212,9 +235,9 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
               PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'edit') {
-                    _handleEdit(key);
+                    _editCategory(key);
                   } else if (value == 'delete') {
-                    _handleDelete(key);
+                    _deleteCategory(key);
                   }
                 },
                 itemBuilder: (context) => [
@@ -390,6 +413,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                   setState(() {
                     _categories[key]!.taskList[taskIndex] = editedItem;
                   });
+                  TaskStorage.saveTasks(_categories);
                   Navigator.pop(context);
                 }
               },
@@ -405,6 +429,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     setState(() {
       _categories[key]!.taskList.removeAt(taskIndex);
     });
+    TaskStorage.saveTasks(_categories);
   }
 
   void _toggleTask(Task task) {
@@ -412,7 +437,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
       task.isDone = !task.isDone;
       task.updatedTime = DateTime.now();
     });
-    // TaskStorage.saveTasks(_categories);
+    TaskStorage.saveTasks(_categories);
   }
 
   @override
