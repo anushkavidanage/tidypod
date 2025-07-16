@@ -121,25 +121,20 @@ Future<void> syncTaskDataProcess(
           childPage,
         );
 
-        print('here1');
-
         if (dataSyncStatus != DataSyncStatus.nodata) {
           dataSyncStateNotifier.setHasData(true);
-          print('here2');
+
           if (!(dataSyncStatus == DataSyncStatus.insync)) {
             bool status = false;
-            print('here3');
+
             if (dataSyncStatus == DataSyncStatus.clientahead) {
-              print('here4');
               final taskJsonStr = await TaskStorage.loadTasksJson();
               status = await saveServerTaskData(
                 taskJsonStr,
                 context,
                 childPage,
               );
-              print('here6');
             } else {
-              print('here5');
               final serverTaskStorage = await loadServerTaskData(
                 context,
                 childPage,
