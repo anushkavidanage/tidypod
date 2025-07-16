@@ -22,11 +22,11 @@
 // Authors: Anushka Vidanage
 
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tidypod/api/rest_api.dart';
 import 'package:tidypod/constants/app.dart';
-// import 'package:tidypod/models/task.dart';
 import 'package:tidypod/utils/check_network.dart';
 import 'package:tidypod/utils/data_sync_state.dart';
 import 'package:tidypod/utils/task_storage.dart';
