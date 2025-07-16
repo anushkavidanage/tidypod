@@ -1,9 +1,10 @@
-/// Individual's POD content variables.
-///
-/// Copyright (C) 2025, Anushka Vidanage
-///
-/// License: GNU General Public License, Version 3 (the "License")
-/// https://www.gnu.org/licenses/gpl-3.0.en.html
+// Synchronising functions
+//
+// Copyright (C) 2025, Anushka Vidanage
+//
+// Licensed under the GNU General Public License, Version 3 (the "License");
+//
+// License: https://www.gnu.org/licenses/gpl-3.0.en.html
 //
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -17,11 +18,8 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // this program.  If not, see <https://www.gnu.org/licenses/>.
-///
-/// Authors: Anushka Vidanage
-library;
-
-// import 'dart:collection';
+//
+// Authors: Anushka Vidanage
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

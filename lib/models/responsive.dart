@@ -1,12 +1,10 @@
-/// DESCRIPTION
-///
-// Time-stamp: <Friday 2025-06-27 13:52:38 +1000 Graham Williams>
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License");
-///
-/// License: https://www.gnu.org/licenses/gpl-3.0.en.html
+// Responsive design
+//
+// Copyright (C) 2025, Anushka Vidanage
+//
+// Licensed under the GNU General Public License, Version 3 (the "License");
+//
+// License: https://www.gnu.org/licenses/gpl-3.0.en.html
 //
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -20,8 +18,8 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // this program.  If not, see <https://www.gnu.org/licenses/>.
-///
-/// Authors: AUTHORS
+//
+// Authors: Anushka Vidanage
 
 library;
 
