@@ -1,9 +1,30 @@
+// Tab view
+//
+// Copyright (C) 2025, Anushka Vidanage
+//
+// Licensed under the GNU General Public License, Version 3 (the "License");
+//
+// License: https://www.gnu.org/licenses/gpl-3.0.en.html
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+// Authors: Anushka Vidanage
+
 import 'package:flutter/material.dart';
 import 'package:tidypod/api/rest_api.dart';
-import 'package:tidypod/app_screen.dart';
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
-import 'package:tidypod/home.dart';
 import 'package:tidypod/models/category.dart';
 import 'package:tidypod/models/task.dart';
 import 'package:tidypod/utils/data_sync_process.dart';
@@ -721,17 +742,18 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                     onPressed: () async {
                       setState(() {
                         _categories = sampleCategories;
+                        _createTabController();
                       });
                       TaskStorage.saveTasks(_categories);
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AppScreen(childPage: HomePage()),
-                        ),
-                        (Route<dynamic> route) =>
-                            false, // This predicate ensures all previous routes are removed
-                      );
+                      // Navigator.pushAndRemoveUntil(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) =>
+                      //         AppScreen(childPage: HomePage()),
+                      //   ),
+                      //   (Route<dynamic> route) =>
+                      //       false, // This predicate ensures all previous routes are removed
+                      // );
                     },
                     child: Text('Load sample tasks'),
                   ),

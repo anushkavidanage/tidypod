@@ -57,7 +57,6 @@ class TaskStorage {
   static Future<LoadedTasks> loadTasks() async {
     final dataKey = (await getWebId() as String) + appName;
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove(dataKey);
     final jsonString = prefs.getString(dataKey);
 
     if (jsonString == null) return LoadedTasks({}, {});

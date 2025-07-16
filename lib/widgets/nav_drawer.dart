@@ -28,7 +28,7 @@ import 'package:solidpod/solidpod.dart';
 // import 'package:tidypod/app_screen.dart';
 // import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
-import 'package:tidypod/home.dart';
+import 'package:tidypod/kanban_view.dart';
 import 'package:tidypod/main.dart';
 
 import 'package:tidypod/utils/misc.dart';
@@ -89,7 +89,7 @@ class NavDrawer extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.view_kanban_outlined),
                   title: const Text('Kanban View'),
-                  onTap: () => onMenuSelect(HomePage()),
+                  onTap: () => onMenuSelect(KanbanView()),
                 ),
                 ListTile(
                   leading: const Icon(Icons.tab_outlined),
@@ -97,14 +97,23 @@ class NavDrawer extends StatelessWidget {
                   onTap: () => onMenuSelect(TabView()),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.file_open_outlined),
-                  title: const Text('Task Sharing'),
-                  onTap: () {},
+                  leading: const Icon(
+                    Icons.file_open_outlined,
+                    color: lightGrey,
+                  ),
+                  title: const Text(
+                    'Task Sharing',
+                    style: TextStyle(color: lightGrey),
+                  ),
+                  onTap: null,
                 ),
                 const Divider(color: lightGrey),
                 ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
+                  leading: const Icon(Icons.settings, color: lightGrey),
+                  title: const Text(
+                    'Settings',
+                    style: TextStyle(color: lightGrey),
+                  ),
                   onTap: () {
                     Navigator.of(context).pop();
                   },

@@ -1,10 +1,10 @@
-/// A Task Manager app
-///
-/// Copyright (C) 2025, Anushka Vidanage
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License");
-///
-/// License: https://www.gnu.org/licenses/gpl-3.0.en.html
+// Kanban view
+//
+// Copyright (C) 2025, Anushka Vidanage
+//
+// Licensed under the GNU General Public License, Version 3 (the "License");
+//
+// License: https://www.gnu.org/licenses/gpl-3.0.en.html
 //
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -18,23 +18,14 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // this program.  If not, see <https://www.gnu.org/licenses/>.
-///
-/// Authors: Anushka Vidanage
+//
+// Authors: Anushka Vidanage
+
+import 'package:flutter/material.dart';
 
 import 'package:appflowy_board/appflowy_board.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tidypod/api/rest_api.dart';
-import 'package:tidypod/app_screen.dart';
 
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-
-// import 'package:timezone/data/latest.dart' as tz;
-// import 'package:timezone/timezone.dart' as tz;
-
-// import 'package:tidypod/utils/task_storage.dart';
-// import 'package:tidypod/utils/misc.dart';
 import 'package:tidypod/models/task.dart';
 import 'package:tidypod/models/kanban_board.dart';
 import 'package:tidypod/models/category.dart';
@@ -44,19 +35,18 @@ import 'package:tidypod/widgets/msg_card.dart';
 import 'package:tidypod/widgets/task_card.dart';
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
+import 'package:tidypod/api/rest_api.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+class KanbanView extends ConsumerStatefulWidget {
+  const KanbanView({super.key});
 
   @override
-  HomePageState createState() => HomePageState();
+  KanbanViewState createState() => KanbanViewState();
 }
 
-class HomePageState extends ConsumerState<HomePage> {
+class KanbanViewState extends ConsumerState<KanbanView> {
   late AppFlowyBoardScrollController boardScrollController;
   late ScrollController scrollController;
-  // List<Task> _tasks = [];
-  // List<String> _categories = [];
   var _categories = <String, Category>{};
   static Future? _asyncDataFetch;
 
@@ -92,12 +82,12 @@ class HomePageState extends ConsumerState<HomePage> {
     //     loadedTasks = await loadServerTaskData(context, HomePage());
     //   }
     // }
-    var dataSyncStaus = await checkDataInSync(context, HomePage());
+    var dataSyncStaus = await checkDataInSync(context, KanbanView());
     if (dataSyncStaus == DataSyncStatus.insync ||
         dataSyncStaus == DataSyncStatus.clientahead) {
       loadedTasks = await TaskStorage.loadTasks();
     } else if (dataSyncStaus == DataSyncStatus.serverahead) {
-      loadedTasks = await loadServerTaskData(context, HomePage());
+      loadedTasks = await loadServerTaskData(context, KanbanView());
     }
 
     for (Category category in loadedTasks.categories.values) {
@@ -141,19 +131,21 @@ class HomePageState extends ConsumerState<HomePage> {
                   SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () async {
+                      for (Category category in sampleCategories.values) {
+                        boardController.addGroup(
+                          AppFlowyGroupData(
+                            id: category.id,
+                            name: category.id,
+                            items: List<AppFlowyGroupItem>.from(
+                              category.taskList,
+                            ),
+                          ),
+                        );
+                      }
                       setState(() {
                         _categories = sampleCategories;
                       });
                       TaskStorage.saveTasks(_categories);
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AppScreen(childPage: HomePage()),
-                        ),
-                        (Route<dynamic> route) =>
-                            false, // This predicate ensures all previous routes are removed
-                      );
                     },
                     child: Text('Load sample tasks'),
                   ),

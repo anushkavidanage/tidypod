@@ -29,7 +29,7 @@ import 'package:tidypod/app_screen.dart';
 
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
-import 'package:tidypod/home.dart';
+import 'package:tidypod/kanban_view.dart';
 
 void main() {
   runApp(const ProviderScope(child: TidyPod()));
@@ -171,7 +171,7 @@ Widget buildSolidLogin() {
         link: 'https://github.com/anusii/healthpod/blob/main/README.md',
         loginButtonStyle: LoginButtonStyle(background: brightYellow),
         infoButtonStyle: InfoButtonStyle(background: lightBlue),
-        child: AppScreen(title: topbarText, childPage: HomePage()),
+        child: AppScreen(title: topbarText, childPage: KanbanView()),
       );
     },
   );

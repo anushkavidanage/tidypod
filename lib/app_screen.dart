@@ -26,7 +26,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solidpod/solidpod.dart';
-import 'package:tidypod/home.dart';
+import 'package:tidypod/kanban_view.dart';
 import 'package:version_widget/version_widget.dart';
 
 import 'package:tidypod/widgets/data_sync_icon.dart';
@@ -49,7 +49,7 @@ class AppScreenState extends ConsumerState<AppScreen>
 
   String _appVersion = '';
 
-  Widget _selectedWidget = HomePage(); // default view
+  Widget _selectedWidget = KanbanView(); // default view
 
   @override
   void initState() {
