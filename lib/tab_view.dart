@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:tidypod/api/rest_api.dart';
+import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/models/category.dart';
 import 'package:tidypod/models/task.dart';
+import 'package:tidypod/utils/data_sync_process.dart';
 import 'package:tidypod/utils/misc.dart';
 import 'package:tidypod/utils/task_storage.dart';
+import 'package:tidypod/widgets/msg_card.dart';
 
 class TabItem {
   String title;
@@ -27,29 +31,39 @@ class TabView extends StatefulWidget {
 class TabViewState extends State<TabView> with TickerProviderStateMixin {
   TabController? _tabController;
   var _categories = <String, Category>{};
+  static Future? _asyncDataFetch;
   bool _isControllerReady = false;
 
   @override
   void initState() {
-    _loadTasks();
+    _asyncDataFetch = _loadTasks();
     super.initState();
   }
 
-  void _loadTasks() async {
+  Future<Map<String, Category>> _loadTasks() async {
     bool initialiseTasks = false;
-    Map<String, Category> taskCatMap;
+    LoadedTasks loadedTasks = LoadedTasks({
+      updateTimeLabel: '',
+    }, <String, Category>{});
 
     if (initialiseTasks) {
-      taskCatMap = initialCategories;
+      loadedTasks.categories = initialCategories;
     } else {
-      LoadedTasks loadedTasks = await TaskStorage.loadTasks();
-      taskCatMap = loadedTasks.categories;
+      var dataSyncStaus = await checkDataInSync(context, TabView());
+      if (dataSyncStaus == DataSyncStatus.insync ||
+          dataSyncStaus == DataSyncStatus.clientahead) {
+        loadedTasks = await TaskStorage.loadTasks();
+      } else if (dataSyncStaus == DataSyncStatus.serverahead) {
+        loadedTasks = await loadServerTaskData(context, TabView());
+      }
+      // LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+      // taskCatMap = loadedTasks.categories;
     }
-    _categories = taskCatMap;
-    _createTabController(initialIndex: 0);
-    setState(() {
-      // _categories = taskCatMap;
-    });
+    _categories = loadedTasks.categories;
+    if (_categories.isNotEmpty) {
+      _createTabController();
+    }
+    return loadedTasks.categories;
   }
 
   void _createTabController({int initialIndex = 0}) {
@@ -79,7 +93,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     if (!init) setState(() {});
   }
 
-  Future<void> _showTabNameDialog({
+  Future<void> _showCategoryNameDialog({
     String? initial,
     Function(String)? onSubmit,
   }) async {
@@ -92,11 +106,23 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
         title: Text(
           initial == null ? 'New Category Name' : 'Edit Category Name',
         ),
-        content: TextField(
-          autofocus: true,
-          controller: controller,
-          onChanged: (value) => tabName = value,
-          decoration: InputDecoration(hintText: 'Enter category name'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Note: Category names must be unique',
+                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 11),
+              ),
+              SizedBox(height: 15),
+              TextField(
+                autofocus: true,
+                controller: controller,
+                onChanged: (value) => tabName = value,
+                decoration: InputDecoration(hintText: 'Enter category name'),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -118,7 +144,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
   }
 
   void _editCategory(String key) {
-    _showTabNameDialog(
+    _showCategoryNameDialog(
       initial: _categories[key]!.id,
       onSubmit: (newKey) {
         setState(() {
@@ -152,11 +178,11 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     int currentIndex = _tabController?.index ?? 0;
     _categories.remove(key);
 
-    if (_categories.isEmpty) {
-      _addCategory("Default Category");
-      TaskStorage.saveTasks(_categories);
-      return;
-    }
+    // if (_categories.isEmpty) {
+    //   _addCategory("Default Category");
+    //   TaskStorage.saveTasks(_categories);
+    //   return;
+    // }
 
     _createTabController(
       initialIndex: currentIndex >= _categories.length
@@ -168,7 +194,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     TaskStorage.saveTasks(_categories);
   }
 
-  void _reorderTabs(int fromIndex, int toIndex) {
+  void _reorderCategory(int fromIndex, int toIndex) {
     if (fromIndex == toIndex) return;
 
     // Convert to a list
@@ -193,30 +219,30 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     TaskStorage.saveTasks(_categories);
   }
 
-  Widget _buildCustomTab(int index) {
+  Widget _buildCustomCategory(int index) {
     return DragTarget<int>(
-      onAccept: (fromIndex) => _reorderTabs(fromIndex, index),
+      onAccept: (fromIndex) => _reorderCategory(fromIndex, index),
       builder: (context, candidateData, rejectedData) {
         return LongPressDraggable<int>(
           data: index,
           feedback: Material(
             color: Colors.transparent,
-            child: _buildTabContent(
+            child: _buildCategoryContent(
               _categories.keys.toList()[index],
               isDragging: true,
             ),
           ),
           childWhenDragging: Opacity(
             opacity: 0.3,
-            child: _buildTabContent(_categories.keys.toList()[index]),
+            child: _buildCategoryContent(_categories.keys.toList()[index]),
           ),
-          child: _buildTabContent(_categories.keys.toList()[index]),
+          child: _buildCategoryContent(_categories.keys.toList()[index]),
         );
       },
     );
   }
 
-  Widget _buildTabContent(String key, {bool isDragging = false}) {
+  Widget _buildCategoryContent(String key, {bool isDragging = false}) {
     return Tab(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 6),
@@ -241,8 +267,24 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem(value: 'edit', child: Text('Edit')),
-                  PopupMenuItem(value: 'delete', child: Text('Delete')),
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, size: 20, color: darkBlue),
+                        Text(' Edit'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, size: 20, color: darkRed),
+                        Text(' Delete'),
+                      ],
+                    ),
+                  ),
                 ],
                 child: Icon(Icons.more_vert, size: 16),
                 padding: EdgeInsets.zero,
@@ -262,7 +304,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
             controller: _tabController,
             tabs: List.generate(
               _categories.length,
-              (index) => _buildCustomTab(index),
+              (index) => _buildCustomCategory(index),
             ),
           ),
         ),
@@ -270,7 +312,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
           icon: Icon(Icons.add),
           tooltip: "Add New Category",
           onPressed: () {
-            _showTabNameDialog(onSubmit: (name) => _addCategory(name));
+            _showCategoryNameDialog(onSubmit: (name) => _addCategory(name));
           },
         ),
       ],
@@ -347,16 +389,36 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                           PopupMenuButton<String>(
                             onSelected: (value) {
                               if (value == 'edit') {
-                                _editListItem(key, taskIndex);
+                                // _editListItem(key, taskIndex);
+                                _showEditTaskDialog(
+                                  _categories[key]!.taskList[taskIndex],
+                                );
                               } else if (value == 'delete') {
-                                _deleteListItem(key, taskIndex);
+                                _deleteTask(key, taskIndex);
                               }
                             },
                             itemBuilder: (context) => [
-                              PopupMenuItem(value: 'edit', child: Text('Edit')),
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit, size: 20, color: darkBlue),
+                                    Text(' Edit'),
+                                  ],
+                                ),
+                              ),
                               PopupMenuItem(
                                 value: 'delete',
-                                child: Text('Delete'),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.delete,
+                                      size: 20,
+                                      color: darkRed,
+                                    ),
+                                    Text(' Delete'),
+                                  ],
+                                ),
                               ),
                             ],
                             padding: EdgeInsets.zero,
@@ -385,47 +447,229 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     );
   }
 
-  void _editListItem(String key, int taskIndex) async {
-    final currentTask = _categories[key]!.taskList[taskIndex];
-    Task editedItem = currentTask;
+  void _showAddTaskDialog(String categoryVal) {
+    final titleController = TextEditingController();
+    // String selectedCategory = _categories.first;
+    DateTime? selectedDate;
 
-    await showDialog(
+    showDialog(
       context: context,
-      builder: (context) {
-        TextEditingController controller = TextEditingController(
-          text: currentTask.title,
-        );
-        return AlertDialog(
-          title: Text('Edit Item'),
-          content: TextField(
-            controller: controller,
-            onChanged: (val) => editedItem.title = val,
-            autofocus: true,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text('New Task'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(hintText: 'Enter task title'),
+                ),
+                SizedBox(height: 15),
+
+                ElevatedButton(
+                  onPressed: () async {
+                    final pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2100),
+                    );
+                    if (pickedDate != null) {
+                      setState(() => selectedDate = pickedDate);
+                    }
+                  },
+                  child: Text(
+                    selectedDate == null
+                        ? 'Pick Due Date (optional)'
+                        : 'Due: ${selectedDate!.toLocal().toString().split(' ')[0]}',
+                  ),
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Category: $categoryVal',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+
+                // DropdownButton<String>(
+                //   value: selectedCategory,
+                //   items: _categories
+                //       .map(
+                //         (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                //       )
+                //       .toList(),
+                //   onChanged: (val) => setState(() => selectedCategory = val!),
+                // ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
-                if (editedItem.title.trim().isNotEmpty) {
-                  setState(() {
-                    _categories[key]!.taskList[taskIndex] = editedItem;
-                  });
-                  TaskStorage.saveTasks(_categories);
-                  Navigator.pop(context);
+                if (titleController.text.trim().isNotEmpty) {
+                  _addTask(
+                    titleController.text.trim(),
+                    categoryVal,
+                    selectedDate,
+                  );
+                  Navigator.of(context).pop();
                 }
               },
-              child: Text("Save"),
+              child: Text('Add'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditTaskDialog(Task task) {
+    TextEditingController titleController = TextEditingController(
+      text: task.title,
+    );
+    DateTime? selectedDate = task.dueDate;
+    String selectedCategory = task.categoryId;
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text('Edit Task'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(labelText: 'Task Title'),
+                  ),
+
+                  SizedBox(height: 15),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        setState(() => selectedDate = pickedDate);
+                      }
+                    },
+                    child: Text(
+                      selectedDate == null
+                          ? 'Pick Due Date (optional)'
+                          : 'Due: ${selectedDate!.toLocal().toString().split(' ')[0]}',
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Text(
+                        'Category: ',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      DropdownButton<String>(
+                        value: selectedCategory,
+                        items: _categories.keys
+                            .map(
+                              (cat) => DropdownMenuItem(
+                                value: cat,
+                                child: Text(cat),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) =>
+                            setState(() => selectedCategory = val!),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (titleController.text.trim().isNotEmpty) {
+                    _editTask(
+                      task,
+                      titleController.text.trim(),
+                      selectedCategory,
+                      selectedDate,
+                    );
+                    Navigator.of(context).pop();
+                  }
+                  // Navigator.pop(context);
+                },
+                child: Text('Save'),
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  void _deleteListItem(String key, int taskIndex) {
+  void _addTask(String title, String categoryId, DateTime? dueDate) async {
+    final task = Task(
+      title: title,
+      createdTime: DateTime.now(),
+      updatedTime: DateTime.now(),
+      categoryId: categoryId,
+      isDone: false,
+      dueDate: dueDate,
+    );
+    setState(() {
+      _categories[categoryId]?.taskList.add(task);
+    });
+    TaskStorage.saveTasks(_categories);
+  }
+
+  void _editTask(
+    Task oldTask,
+    String title,
+    String selectedCategory,
+    DateTime? dueDate,
+  ) async {
+    String oldCategory = oldTask.categoryId;
+    oldTask.title = title;
+    oldTask.categoryId = selectedCategory;
+    oldTask.dueDate = dueDate;
+    oldTask.updatedTime = DateTime.now();
+
+    // If the category of the task is changed, need to update that
+    if (oldCategory != selectedCategory) {
+      var removingCategory = _categories[oldCategory];
+      var insertingCategory = _categories[selectedCategory];
+
+      removingCategory?.updatedTime = DateTime.now(); // Update time
+      insertingCategory?.updatedTime = DateTime.now(); // Update time
+
+      // Remove the task from the removing category
+      removingCategory?.taskList.remove(oldTask);
+
+      // Insert the task to the inserting category
+      insertingCategory?.taskList.add(oldTask);
+
+      // Update the overall category map
+      _categories[oldCategory] = removingCategory!;
+      _categories[selectedCategory] = insertingCategory!;
+    }
+    setState(() {});
+    TaskStorage.saveTasks(_categories);
+  }
+
+  void _deleteTask(String key, int taskIndex) {
     setState(() {
       _categories[key]!.taskList.removeAt(taskIndex);
     });
@@ -446,36 +690,83 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  _buildTabPage(BuildContext context, Map<String, Category> categoriesMap) {
+    if (_categories.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text("Tab View")),
+        body: Center(
+          child: Column(
+            children: [
+              buildMsgCard(
+                context,
+                Icons.info,
+                brightOrange,
+                'No Tasks Yet!',
+                'You have not added any tasks or categories yet! Please add a category to get started.',
+              ),
+              SizedBox(height: 50),
+              ElevatedButton(
+                onPressed: () async {
+                  _showCategoryNameDialog(
+                    onSubmit: (name) => _addCategory(name),
+                  );
+                },
+                child: Text('New Category'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      // _createTabController();
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Tab View"),
+          bottom: _isControllerReady
+              ? PreferredSize(
+                  preferredSize: Size.fromHeight(48.0),
+                  child: _buildTabBar(),
+                )
+              : null,
+        ),
+        body: _isControllerReady
+            ? TabBarView(
+                controller: _tabController,
+                children: _categories.entries.map((entry) {
+                  return _buildReorderableList(entry.key);
+                }).toList(),
+              )
+            : Center(child: CircularProgressIndicator()),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: brightYellow,
+          onPressed: () {
+            int currentTab = _tabController?.index ?? 0;
+            _showAddTaskDialog(_categories.keys.toList()[currentTab]);
+            // _addListItem(currentTab, (fn) => setState(fn)); // call add item
+          },
+          tooltip: "Add New Task",
+          child: Icon(Icons.add),
+        ),
+      );
+    }
+  }
+
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Tab View"),
-        bottom: _isControllerReady
-            ? PreferredSize(
-                preferredSize: Size.fromHeight(48.0),
-                child: _buildTabBar(),
-              )
-            : null,
-      ),
-      body: _isControllerReady
-          ? TabBarView(
-              controller: _tabController,
-              children: _categories.entries.map((entry) {
-                return _buildReorderableList(entry.key);
-              }).toList(),
-            )
-          : Center(child: CircularProgressIndicator()),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: brightYellow,
-        onPressed: () {
-          int currentTab = _tabController?.index ?? 0;
-          print(currentTab);
-          // _addListItem(currentTab, (fn) => setState(fn)); // call add item
-        },
-        tooltip: "Add New Task",
-        child: Icon(Icons.add),
-      ),
+    // Run future and return results
+    return FutureBuilder(
+      future: _asyncDataFetch,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _buildTabPage(context, snapshot.data);
+        } else {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+      },
     );
   }
 }

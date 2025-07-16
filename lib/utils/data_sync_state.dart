@@ -28,22 +28,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DataSyncState {
   final bool networkConnected;
+  final bool hasData;
   final bool isSynching;
   final bool isSynched;
 
   const DataSyncState({
     this.networkConnected = true,
+    this.hasData = true,
     this.isSynching = false,
     this.isSynched = false,
   });
 
   DataSyncState copyWith({
     bool? networkConnected,
+    bool? hasData,
     bool? isSynching,
     bool? isSynched,
   }) {
     return DataSyncState(
       networkConnected: networkConnected ?? this.networkConnected,
+      hasData: hasData ?? this.hasData,
       isSynching: isSynching ?? this.isSynching,
       isSynched: isSynched ?? this.isSynched,
     );
@@ -61,6 +65,10 @@ class DataSyncStateNotifier extends StateNotifier<DataSyncState> {
 
   void setNetworkConnected(bool connected) {
     state = state.copyWith(networkConnected: connected);
+  }
+
+  void setHasData(bool hasData) {
+    state = state.copyWith(hasData: hasData);
   }
 
   void setIsSynching(bool synching) {

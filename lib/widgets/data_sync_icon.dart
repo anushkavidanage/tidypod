@@ -29,7 +29,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animated_icon/animated_icon.dart';
-import 'package:tidypod/api/rest_api.dart';
 
 import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/utils/data_sync_state.dart';
@@ -45,7 +44,6 @@ class DataSyncIcon extends ConsumerStatefulWidget {
 }
 
 class DataSyncIconState extends ConsumerState<DataSyncIcon> {
-  Timer? _timer;
   bool showSyncStatus = false;
 
   @override
@@ -58,11 +56,11 @@ class DataSyncIconState extends ConsumerState<DataSyncIcon> {
     // Simulate a network call or delay
     // Wait for three seconds so the widget tree is fully build
     await Future.delayed(Duration(seconds: 3));
-    // setState(() {
-    //   showSyncStatus = true;
-    // });
-    _timer = Timer.periodic(Duration(seconds: waitSeconds), (Timer timer) {
-      // syncTaskDataProcess(context, DataSyncIcon(), ref);
+    setState(() {
+      showSyncStatus = true;
+    });
+    Timer.periodic(Duration(seconds: waitSeconds), (Timer timer) {
+      syncTaskDataProcess(context, DataSyncIcon(), ref);
       print('running');
     });
   }
@@ -75,7 +73,7 @@ class DataSyncIconState extends ConsumerState<DataSyncIcon> {
       padding: EdgeInsets.only(right: 20),
       child: Row(
         children: [
-          showSyncStatus
+          (showSyncStatus && dataSyncState.hasData)
               ? dataSyncState.networkConnected
                     ? dataSyncState.isSynching
                           ? RichText(

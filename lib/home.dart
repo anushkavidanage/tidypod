@@ -24,6 +24,7 @@
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tidypod/api/rest_api.dart';
 
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_native_timezone/flutter_native_timezone.dart';
@@ -36,6 +37,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tidypod/models/task.dart';
 import 'package:tidypod/models/kanban_board.dart';
 import 'package:tidypod/models/category.dart';
+import 'package:tidypod/utils/data_sync_process.dart';
+import 'package:tidypod/utils/data_sync_state.dart';
 import 'package:tidypod/utils/task_storage.dart';
 import 'package:tidypod/widgets/msg_card.dart';
 import 'package:tidypod/widgets/task_card.dart';
@@ -55,26 +58,53 @@ class HomePageState extends ConsumerState<HomePage> {
   // List<Task> _tasks = [];
   // List<String> _categories = [];
   var _categories = <String, Category>{};
+  static Future? _asyncDataFetch;
 
   @override
   void initState() {
     boardScrollController = AppFlowyBoardScrollController();
     scrollController = ScrollController();
-    _loadTasks();
+    _asyncDataFetch = _loadTasks();
     super.initState();
   }
 
-  void _loadTasks() async {
+  Future<Map<String, Category>> _loadTasks() async {
     bool initialiseTasks = false;
-    Map<String, Category> taskCatMap;
+    LoadedTasks loadedTasks = LoadedTasks({
+      updateTimeLabel: '',
+    }, <String, Category>{});
 
     if (initialiseTasks) {
-      taskCatMap = initialCategories;
+      loadedTasks.categories = initialCategories;
     } else {
-      LoadedTasks loadedTasks = await TaskStorage.loadTasks();
-      taskCatMap = loadedTasks.categories;
+      /// av: Why below commented code is not working?
+      // print('here0');
+      // final dataSyncState = ref.watch(dataSyncStateProvider);
+      // print(dataSyncState);
+      // if (dataSyncState.isSynched) {
+      //   print('here1');
+      //   loadedTasks = await TaskStorage.loadTasks();
+      // } else {
+      //   print('here2');
+      //   var dataSyncStaus = await checkDataInSync(context, HomePage());
+      //   if (dataSyncStaus == DataSyncStatus.insync ||
+      //       dataSyncStaus == DataSyncStatus.clientahead) {
+      //     print('here3');
+      //     loadedTasks = await TaskStorage.loadTasks();
+      //   } else if (dataSyncStaus == DataSyncStatus.serverahead) {
+      //     print('here4');
+      //     loadedTasks = await loadServerTaskData(context, HomePage());
+      //   }
+      // }
+      var dataSyncStaus = await checkDataInSync(context, HomePage());
+      if (dataSyncStaus == DataSyncStatus.insync ||
+          dataSyncStaus == DataSyncStatus.clientahead) {
+        loadedTasks = await TaskStorage.loadTasks();
+      } else if (dataSyncStaus == DataSyncStatus.serverahead) {
+        loadedTasks = await loadServerTaskData(context, HomePage());
+      }
     }
-    for (Category category in taskCatMap.values) {
+    for (Category category in loadedTasks.categories.values) {
       boardController.addGroup(
         AppFlowyGroupData(
           id: category.id,
@@ -83,17 +113,14 @@ class HomePageState extends ConsumerState<HomePage> {
         ),
       );
     }
-    // for (Task task in taskCatList.first) {
-    //   assert(taskCatList.last.contains(task.categoryId));
-    //   boardController.addGroupItem(task.categoryId, task);
-    // }
     setState(() {
-      _categories = taskCatMap;
+      _categories = loadedTasks.categories;
     });
+
+    return loadedTasks.categories;
   }
 
-  @override
-  Widget build(BuildContext context) {
+  _buildKanbanPage(BuildContext context, Map<String, Category> categoriesMap) {
     final config = AppFlowyBoardConfig(
       groupBackgroundColor: bgOffWhite,
       groupCornerRadius: 20,
@@ -202,6 +229,10 @@ class HomePageState extends ConsumerState<HomePage> {
       ),
     );
   }
+  // @override
+  // Widget build(BuildContext context) {
+
+  // }
 
   Widget _buildCard(AppFlowyGroupItem item) {
     if (item is Task) {
@@ -518,5 +549,20 @@ class HomePageState extends ConsumerState<HomePage> {
     // flutterLocalNotificationsPlugin.cancel(
     //   task.title.hashCode,
     // ); // Cancel notification
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Run future and return results
+    return FutureBuilder(
+      future: _asyncDataFetch,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _buildKanbanPage(context, snapshot.data);
+        } else {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+      },
+    );
   }
 }

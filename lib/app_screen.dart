@@ -26,6 +26,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solidpod/solidpod.dart';
+import 'package:tidypod/home.dart';
 import 'package:version_widget/version_widget.dart';
 
 import 'package:tidypod/widgets/data_sync_icon.dart';
@@ -48,6 +49,8 @@ class AppScreenState extends ConsumerState<AppScreen>
 
   String _appVersion = '';
 
+  Widget _selectedWidget = HomePage(); // default view
+
   @override
   void initState() {
     super.initState();
@@ -63,6 +66,13 @@ class AppScreenState extends ConsumerState<AppScreen>
         _appVersion = appInfo.version;
       });
     }
+  }
+
+  void _selectWidget(Widget widget) {
+    setState(() {
+      _selectedWidget = widget;
+    });
+    Navigator.of(context).pop(); // close the drawer
   }
 
   Future<({String name, String? webId})> _getInfo() async =>
@@ -117,8 +127,9 @@ class AppScreenState extends ConsumerState<AppScreen>
           const SizedBox(width: 10),
         ],
       ),
-      drawer: NavDrawer(webId: _webId ?? ''),
-      body: widget.childPage,
+      drawer: NavDrawer(webId: _webId ?? '', onMenuSelect: _selectWidget),
+
+      body: _selectedWidget,
     );
   }
 

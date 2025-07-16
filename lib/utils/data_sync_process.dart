@@ -48,7 +48,8 @@ int waitSeconds = 10;
 enum DataSyncStatus {
   insync('In sync'),
   clientahead('Client ahead'),
-  serverahead('Server ahead');
+  serverahead('Server ahead'),
+  nodata('No data');
 
   // Generative enum constructor
   const DataSyncStatus(this.value);
@@ -66,6 +67,16 @@ Future<DataSyncStatus> checkDataInSync(
   // Load local data
   final clientTaskStorage = await TaskStorage.loadTasks();
   final serverTaskStorage = await loadServerTaskData(context, childPage);
+  if (clientTaskStorage.updatedTime[updateTimeLabel] == null &&
+      serverTaskStorage.updatedTime[updateTimeLabel] == null) {
+    return DataSyncStatus.nodata;
+  } else {
+    if (clientTaskStorage.updatedTime[updateTimeLabel] == null) {
+      return DataSyncStatus.serverahead;
+    } else if (serverTaskStorage.updatedTime[updateTimeLabel] == null) {
+      return DataSyncStatus.clientahead;
+    }
+  }
 
   final clientUpdatedTime = DateTime.parse(
     clientTaskStorage.updatedTime[updateTimeLabel] as String,
@@ -110,38 +121,55 @@ Future<void> syncTaskDataProcess(
           childPage,
         );
 
-        if (!(dataSyncStatus == DataSyncStatus.insync)) {
-          bool status = false;
-          if (dataSyncStatus == DataSyncStatus.clientahead) {
-            final taskJsonStr = await TaskStorage.loadTasksJson();
-            status = await saveServerTaskData(taskJsonStr, context, childPage);
-          } else {
-            final serverTaskStorage = await loadServerTaskData(
-              context,
-              childPage,
-            );
-            final categories = serverTaskStorage.categories;
-            String updatedTime =
-                serverTaskStorage.updatedTime[updateTimeLabel] as String;
-            await TaskStorage.saveTasks(
-              categories,
-              updatedTime: DateTime.parse(updatedTime),
-            );
-            status = true;
-          }
+        print('here1');
 
-          if (status) {
+        if (dataSyncStatus != DataSyncStatus.nodata) {
+          dataSyncStateNotifier.setHasData(true);
+          print('here2');
+          if (!(dataSyncStatus == DataSyncStatus.insync)) {
+            bool status = false;
+            print('here3');
+            if (dataSyncStatus == DataSyncStatus.clientahead) {
+              print('here4');
+              final taskJsonStr = await TaskStorage.loadTasksJson();
+              status = await saveServerTaskData(
+                taskJsonStr,
+                context,
+                childPage,
+              );
+              print('here6');
+            } else {
+              print('here5');
+              final serverTaskStorage = await loadServerTaskData(
+                context,
+                childPage,
+              );
+              final categories = serverTaskStorage.categories;
+              String updatedTime =
+                  serverTaskStorage.updatedTime[updateTimeLabel] as String;
+              await TaskStorage.saveTasks(
+                categories,
+                updatedTime: DateTime.parse(updatedTime),
+              );
+              status = true;
+            }
+
+            if (status) {
+              isLocalChanged = false;
+              dataSyncStateNotifier.setIsSynching(false);
+              dataSyncStateNotifier.setIsSynched(true);
+            } else {
+              dataSyncStateNotifier.setIsSynched(false);
+              dataSyncStateNotifier.setIsSynching(false);
+            }
+          } else {
             isLocalChanged = false;
             dataSyncStateNotifier.setIsSynching(false);
             dataSyncStateNotifier.setIsSynched(true);
-          } else {
-            dataSyncStateNotifier.setIsSynched(false);
-            dataSyncStateNotifier.setIsSynching(false);
           }
         } else {
           isLocalChanged = false;
-          dataSyncStateNotifier.setIsSynching(false);
-          dataSyncStateNotifier.setIsSynched(true);
+          dataSyncStateNotifier.setHasData(false);
         }
       } catch (_) {
         throw Exception('Failed to sync data!');

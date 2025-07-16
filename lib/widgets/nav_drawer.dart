@@ -25,8 +25,8 @@ import 'package:flutter/material.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:solidpod/solidpod.dart';
-import 'package:tidypod/app_screen.dart';
-import 'package:tidypod/constants/app.dart';
+// import 'package:tidypod/app_screen.dart';
+// import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/home.dart';
 import 'package:tidypod/main.dart';
@@ -36,8 +36,9 @@ import 'package:tidypod/tab_view.dart';
 
 class NavDrawer extends StatelessWidget {
   final String webId;
+  final Function onMenuSelect;
 
-  const NavDrawer({super.key, required this.webId});
+  const NavDrawer({super.key, required this.webId, required this.onMenuSelect});
 
   @override
   Widget build(BuildContext context) {
@@ -88,32 +89,12 @@ class NavDrawer extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.view_kanban_outlined),
                   title: const Text('Kanban View'),
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AppScreen(title: topbarText, childPage: HomePage()),
-                      ),
-                      (Route<dynamic> route) =>
-                          false, // This predicate ensures all previous routes are removed
-                    );
-                  },
+                  onTap: () => onMenuSelect(HomePage()),
                 ),
                 ListTile(
                   leading: const Icon(Icons.tab_outlined),
                   title: const Text('Tab View'),
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AppScreen(title: topbarText, childPage: TabView()),
-                      ),
-                      (Route<dynamic> route) =>
-                          false, // This predicate ensures all previous routes are removed
-                    );
-                  },
+                  onTap: () => onMenuSelect(TabView()),
                 ),
                 ListTile(
                   leading: const Icon(Icons.file_open_outlined),

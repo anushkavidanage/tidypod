@@ -69,9 +69,12 @@ Future<LoadedTasks> loadServerTaskData(
     }
   }
 
-  final decodedCategories = json.decode(taskJsonStr);
   String updatedTimeStr = '';
   var categories = <String, Category>{};
+
+  if (taskJsonStr.isEmpty) return LoadedTasks({}, {});
+
+  final decodedCategories = json.decode(taskJsonStr);
 
   for (var json in decodedCategories) {
     if (json.containsKey(updateTimeLabel)) {
@@ -119,57 +122,6 @@ Future<bool> saveServerTaskData(
     }
   } else {
     return false;
-  }
-}
-
-Future<Map> getCategoryList(BuildContext context, Widget childPage) async {
-  final loggedIn = await loginIfRequired(context);
-  String webId = await getWebId() as String;
-  webId = webId.replaceAll(profCard, '');
-
-  if (loggedIn) {
-    final dataDirPath = await getDataDirPath();
-    final dataDirUrl = await getDirUrl(dataDirPath);
-
-    final categoriesDirUrl = '$dataDirUrl/';
-
-    // Check if the directory exists.
-
-    bool resExist = await checkResourceStatus(
-      categoriesDirUrl,
-      fileFlag: false,
-    );
-
-    if (resExist) {
-      debugPrint(
-        'Checking data directory for the categories: $categoriesDirUrl.',
-      );
-      final res = await getResourcesInContainer(categoriesDirUrl);
-      debugPrint(res.toString());
-
-      Map notesMap = {};
-      // Loop through the list of files to get the file names
-      for (final fileName in res.files) {
-        // Read file content
-        debugPrint('About to read from $fileName');
-        String noteContent = await readPod(
-          fileName.replaceAll(webId, ''),
-          context,
-          childPage,
-        );
-        debugPrint('About to call noteInfoMap $fileName');
-        // notesMap[fileName] = noteInfoMap(noteContent);
-        debugPrint('$fileName => ${notesMap[fileName]}');
-      }
-      // final filteredMap = filterTreatments(treatmentMap, type);
-      return notesMap;
-    } else {
-      debugPrint('No data directory for the notes: $categoriesDirUrl.');
-      return {};
-    }
-  } else {
-    debugPrint('Not logged in in finding the list of notes.');
-    return {};
   }
 }
 

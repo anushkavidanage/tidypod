@@ -57,15 +57,16 @@ class TaskStorage {
   static Future<LoadedTasks> loadTasks() async {
     final dataKey = (await getWebId() as String) + appName;
     final prefs = await SharedPreferences.getInstance();
+    // prefs.remove(dataKey);
     final jsonString = prefs.getString(dataKey);
 
     if (jsonString == null) return LoadedTasks({}, {});
 
+    String updatedTimeStr = '';
+
     final List decodedCategories = json.decode(jsonString);
 
     var categories = <String, Category>{};
-
-    String updatedTimeStr = '';
 
     for (var json in decodedCategories) {
       if (json.containsKey(updateTimeLabel)) {
@@ -97,8 +98,8 @@ class TaskStorage {
 
 // Custom class for loading tasks
 class LoadedTasks {
-  final Map<String, String> updatedTime;
-  final Map<String, Category> categories;
+  Map<String, String> updatedTime;
+  Map<String, Category> categories;
 
   LoadedTasks(this.updatedTime, this.categories);
 }
