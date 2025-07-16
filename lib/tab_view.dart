@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tidypod/api/rest_api.dart';
+import 'package:tidypod/app_screen.dart';
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
+import 'package:tidypod/home.dart';
 import 'package:tidypod/models/category.dart';
 import 'package:tidypod/models/task.dart';
 import 'package:tidypod/utils/data_sync_process.dart';
@@ -721,6 +723,15 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                         _categories = sampleCategories;
                       });
                       TaskStorage.saveTasks(_categories);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AppScreen(childPage: HomePage()),
+                        ),
+                        (Route<dynamic> route) =>
+                            false, // This predicate ensures all previous routes are removed
+                      );
                     },
                     child: Text('Load sample tasks'),
                   ),
