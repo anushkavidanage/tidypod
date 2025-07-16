@@ -41,24 +41,20 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
   }
 
   Future<Map<String, Category>> _loadTasks() async {
-    bool initialiseTasks = false;
     LoadedTasks loadedTasks = LoadedTasks({
       updateTimeLabel: '',
     }, <String, Category>{});
 
-    if (initialiseTasks) {
-      loadedTasks.categories = initialCategories;
-    } else {
-      var dataSyncStaus = await checkDataInSync(context, TabView());
-      if (dataSyncStaus == DataSyncStatus.insync ||
-          dataSyncStaus == DataSyncStatus.clientahead) {
-        loadedTasks = await TaskStorage.loadTasks();
-      } else if (dataSyncStaus == DataSyncStatus.serverahead) {
-        loadedTasks = await loadServerTaskData(context, TabView());
-      }
-      // LoadedTasks loadedTasks = await TaskStorage.loadTasks();
-      // taskCatMap = loadedTasks.categories;
+    var dataSyncStaus = await checkDataInSync(context, TabView());
+    if (dataSyncStaus == DataSyncStatus.insync ||
+        dataSyncStaus == DataSyncStatus.clientahead) {
+      loadedTasks = await TaskStorage.loadTasks();
+    } else if (dataSyncStaus == DataSyncStatus.serverahead) {
+      loadedTasks = await loadServerTaskData(context, TabView());
     }
+    // LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+    // taskCatMap = loadedTasks.categories;
+
     _categories = loadedTasks.categories;
     if (_categories.isNotEmpty) {
       _createTabController();
@@ -707,13 +703,28 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                 'You have not added any tasks or categories yet! Please add a category to get started.',
               ),
               SizedBox(height: 50),
-              ElevatedButton(
-                onPressed: () async {
-                  _showCategoryNameDialog(
-                    onSubmit: (name) => _addCategory(name),
-                  );
-                },
-                child: Text('New Category'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      _showCategoryNameDialog(
+                        onSubmit: (name) => _addCategory(name),
+                      );
+                    },
+                    child: Text('New Category'),
+                  ),
+                  SizedBox(width: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _categories = sampleCategories;
+                      });
+                      TaskStorage.saveTasks(_categories);
+                    },
+                    child: Text('Load sample tasks'),
+                  ),
+                ],
               ),
             ],
           ),

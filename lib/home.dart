@@ -25,6 +25,7 @@ import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tidypod/api/rest_api.dart';
+import 'package:tidypod/app_screen.dart';
 
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_native_timezone/flutter_native_timezone.dart';
@@ -38,7 +39,6 @@ import 'package:tidypod/models/task.dart';
 import 'package:tidypod/models/kanban_board.dart';
 import 'package:tidypod/models/category.dart';
 import 'package:tidypod/utils/data_sync_process.dart';
-import 'package:tidypod/utils/data_sync_state.dart';
 import 'package:tidypod/utils/task_storage.dart';
 import 'package:tidypod/widgets/msg_card.dart';
 import 'package:tidypod/widgets/task_card.dart';
@@ -69,41 +69,37 @@ class HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<Map<String, Category>> _loadTasks() async {
-    bool initialiseTasks = false;
     LoadedTasks loadedTasks = LoadedTasks({
       updateTimeLabel: '',
     }, <String, Category>{});
 
-    if (initialiseTasks) {
-      loadedTasks.categories = initialCategories;
-    } else {
-      /// av: Why below commented code is not working?
-      // print('here0');
-      // final dataSyncState = ref.watch(dataSyncStateProvider);
-      // print(dataSyncState);
-      // if (dataSyncState.isSynched) {
-      //   print('here1');
-      //   loadedTasks = await TaskStorage.loadTasks();
-      // } else {
-      //   print('here2');
-      //   var dataSyncStaus = await checkDataInSync(context, HomePage());
-      //   if (dataSyncStaus == DataSyncStatus.insync ||
-      //       dataSyncStaus == DataSyncStatus.clientahead) {
-      //     print('here3');
-      //     loadedTasks = await TaskStorage.loadTasks();
-      //   } else if (dataSyncStaus == DataSyncStatus.serverahead) {
-      //     print('here4');
-      //     loadedTasks = await loadServerTaskData(context, HomePage());
-      //   }
-      // }
-      var dataSyncStaus = await checkDataInSync(context, HomePage());
-      if (dataSyncStaus == DataSyncStatus.insync ||
-          dataSyncStaus == DataSyncStatus.clientahead) {
-        loadedTasks = await TaskStorage.loadTasks();
-      } else if (dataSyncStaus == DataSyncStatus.serverahead) {
-        loadedTasks = await loadServerTaskData(context, HomePage());
-      }
+    /// av: Why below commented code is not working?
+    // print('here0');
+    // final dataSyncState = ref.watch(dataSyncStateProvider);
+    // print(dataSyncState);
+    // if (dataSyncState.isSynched) {
+    //   print('here1');
+    //   loadedTasks = await TaskStorage.loadTasks();
+    // } else {
+    //   print('here2');
+    //   var dataSyncStaus = await checkDataInSync(context, HomePage());
+    //   if (dataSyncStaus == DataSyncStatus.insync ||
+    //       dataSyncStaus == DataSyncStatus.clientahead) {
+    //     print('here3');
+    //     loadedTasks = await TaskStorage.loadTasks();
+    //   } else if (dataSyncStaus == DataSyncStatus.serverahead) {
+    //     print('here4');
+    //     loadedTasks = await loadServerTaskData(context, HomePage());
+    //   }
+    // }
+    var dataSyncStaus = await checkDataInSync(context, HomePage());
+    if (dataSyncStaus == DataSyncStatus.insync ||
+        dataSyncStaus == DataSyncStatus.clientahead) {
+      loadedTasks = await TaskStorage.loadTasks();
+    } else if (dataSyncStaus == DataSyncStatus.serverahead) {
+      loadedTasks = await loadServerTaskData(context, HomePage());
     }
+
     for (Category category in loadedTasks.categories.values) {
       boardController.addGroup(
         AppFlowyGroupData(
@@ -133,12 +129,35 @@ class HomePageState extends ConsumerState<HomePage> {
       ),
       body: _categories.isEmpty
           ? Center(
-              child: buildMsgCard(
-                context,
-                Icons.info,
-                brightOrange,
-                'No Tasks Yet!',
-                'You have not added any tasks or categories yet! Please add a category to get started.',
+              child: Column(
+                children: [
+                  buildMsgCard(
+                    context,
+                    Icons.info,
+                    brightOrange,
+                    'No Tasks Yet!',
+                    'You have not added any tasks or categories yet! Please add a category or load sample tasks to get started.',
+                  ),
+                  SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _categories = sampleCategories;
+                      });
+                      TaskStorage.saveTasks(_categories);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AppScreen(childPage: HomePage()),
+                        ),
+                        (Route<dynamic> route) =>
+                            false, // This predicate ensures all previous routes are removed
+                      );
+                    },
+                    child: Text('Load sample tasks'),
+                  ),
+                ],
               ),
             )
           : Scrollbar(

@@ -59,14 +59,14 @@ class Category {
   }
 }
 
-final Map<String, Category> initialCategories = {
+final Map<String, Category> sampleCategories = {
   'Work': Category(
     id: 'Work',
     createdTime: DateTime.now(),
     updatedTime: DateTime.now(),
     taskList: [
       Task(
-        title: "Compile ideas for new research",
+        title: "Compile ideas for PODs research",
         createdTime: DateTime.now(),
         updatedTime: DateTime.now(),
         categoryId: 'Work',
@@ -78,7 +78,7 @@ final Map<String, Category> initialCategories = {
         updatedTime: DateTime.now(),
         categoryId: 'Work',
         isDone: false,
-        dueDate: DateTime.parse('2025-07-27'),
+        dueDate: DateTime.parse('2025-08-27'),
       ),
     ],
   ),
@@ -101,7 +101,7 @@ final Map<String, Category> initialCategories = {
         updatedTime: DateTime.now(),
         categoryId: 'Personal',
         isDone: false,
-        dueDate: DateTime.parse('2025-12-07'),
+        dueDate: DateTime.parse('2025-12-10'),
       ),
     ],
   ),
