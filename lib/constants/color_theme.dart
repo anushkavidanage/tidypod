@@ -24,6 +24,7 @@
 import 'package:flutter/material.dart';
 
 const brightOrange = Color(0xFFf59a48);
+const lightOrange = Color(0xFFfbd6b6);
 const darkRed = Color(0xFF901930);
 const brightYellow = Color(0xFFf8d23a);
 const lightBlue = Color(0xFF5dbfcf);
@@ -33,6 +34,7 @@ const darkGreen = Color(0xFF679436);
 const lightGreen = Color(0xFFAFC97E);
 // const backgroundWhite = Color(0xFFF5F6FC);
 const lightGrey = Color(0xFF8793B2);
+const lightGrey2 = Color(0xFFd0d5e1);
 const lighterGrey = Color.fromARGB(255, 243, 243, 243);
 const bgOffWhite = Color(0xFFF2F4FC);
 // const kTitleTextColor = Color(0xFF30384D);

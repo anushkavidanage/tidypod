@@ -369,6 +369,10 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                 padding: const EdgeInsets.fromLTRB(2.0, 4.0, 2.0, 4.0),
                 child: Container(
                   decoration: BoxDecoration(
+                    border: Border.all(
+                      color: lightOrange, // Border color
+                      width: 0.5,
+                    ),
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),

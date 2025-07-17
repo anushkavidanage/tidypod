@@ -65,6 +65,7 @@ class TidyPod extends StatelessWidget {
         // ),
         // scaffoldBackgroundColor: bgOffWhite,
       ),
+      debugShowCheckedModeBanner: false,
       home: buildSolidLogin(),
     );
   }

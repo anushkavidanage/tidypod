@@ -163,6 +163,14 @@ class KanbanViewState extends ConsumerState<KanbanView> {
                   cardBuilder: (context, group, groupItem) {
                     return AppFlowyGroupCard(
                       key: ValueKey(groupItem.id),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: lightGrey2, // Border color
+                          width: 0.5,
+                        ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: _buildCard(groupItem),
                     );
                   },
