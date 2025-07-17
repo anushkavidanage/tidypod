@@ -25,12 +25,10 @@ import 'package:flutter/material.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:solidpod/solidpod.dart';
-// import 'package:tidypod/app_screen.dart';
-// import 'package:tidypod/constants/app.dart';
+
 import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/kanban_view.dart';
 import 'package:tidypod/main.dart';
-
 import 'package:tidypod/utils/misc.dart';
 import 'package:tidypod/tab_view.dart';
 

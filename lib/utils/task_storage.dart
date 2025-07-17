@@ -23,12 +23,12 @@
 
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solidpod/solidpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/models/category.dart';
 import 'package:tidypod/utils/data_sync_process.dart';
-// import 'package:tidypod/models/task.dart';
 
 // Local storage class for tasks and categories
 class TaskStorage {

@@ -24,11 +24,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solidpod/solidpod.dart';
-import 'package:tidypod/kanban_view.dart';
 import 'package:version_widget/version_widget.dart';
 
+import 'package:tidypod/kanban_view.dart';
 import 'package:tidypod/widgets/data_sync_icon.dart';
 import 'package:tidypod/widgets/nav_drawer.dart';
 
