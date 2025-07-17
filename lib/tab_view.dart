@@ -168,7 +168,6 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
       initial: _categories[key]!.id,
       onSubmit: (newKey) {
         setState(() {
-          _categories[key]!.id = newKey;
           _categories = updateMapKeyPreserveOrder(_categories, key, newKey);
         });
         TaskStorage.saveTasks(_categories);
@@ -185,6 +184,12 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
 
     originalMap.forEach((key, value) {
       if (key == oldKey) {
+        // Update category id
+        value.id = newKey;
+        // update each task in that category
+        for (Task task in value.taskList) {
+          task.categoryId = newKey;
+        }
         updatedMap[newKey] = value;
       } else {
         updatedMap[key] = value;

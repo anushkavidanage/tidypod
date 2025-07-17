@@ -31,6 +31,7 @@ import 'package:tidypod/models/kanban_board.dart';
 import 'package:tidypod/models/category.dart';
 import 'package:tidypod/utils/data_sync_process.dart';
 import 'package:tidypod/utils/task_storage.dart';
+import 'package:tidypod/widgets/category_header.dart';
 import 'package:tidypod/widgets/msg_card.dart';
 import 'package:tidypod/widgets/task_card.dart';
 import 'package:tidypod/constants/app.dart';
@@ -186,15 +187,21 @@ class KanbanViewState extends ConsumerState<KanbanView> {
                       ),
                       title: Flexible(
                         // width: 150,
-                        child: TextField(
-                          controller: TextEditingController()
-                            ..text = group.headerData.groupName,
-                          onSubmitted: (val) {
-                            boardController
-                                .getGroupController(group.headerData.groupId)!
-                                .updateGroupName(val);
-                          },
+                        child: EditableTextWidget(
+                          initialText: group.headerData.groupName,
+                          onSubmit: _editCategory,
                         ),
+                        // TextField(
+                        //   controller: TextEditingController()
+                        //     ..text = group.headerData.groupName,
+                        //   onSubmitted: (val) {
+                        //     boardController
+                        //         .getGroupController(
+                        //           group.headerData.groupId,
+                        //         )!
+                        //         .updateGroupName(val);
+                        //   },
+                        // ),
                       ),
                       //addIcon: const Icon(Icons.add, size: 20),
                       moreIcon: const Icon(
@@ -506,6 +513,49 @@ class KanbanViewState extends ConsumerState<KanbanView> {
       _categories[name] = localCategory;
     });
     await TaskStorage.saveTasks(_categories);
+  }
+
+  void _editCategory(String name, String newName) {
+    _categories = updateMapKeyPreserveOrder(_categories, name, newName);
+
+    // Update the board conroller
+    boardController.removeGroup(name);
+    boardController.insertGroup(
+      _categories.keys.toList().indexOf(newName),
+      AppFlowyGroupData(
+        id: newName,
+        name: newName,
+        items: List<AppFlowyGroupItem>.from(_categories[newName]!.taskList),
+      ),
+    );
+
+    // Save tasks
+    TaskStorage.saveTasks(_categories);
+  }
+
+  // Update map while preserving the order of categories
+  Map<String, Category> updateMapKeyPreserveOrder(
+    Map<String, Category> originalMap,
+    String oldKey,
+    String newKey,
+  ) {
+    Map<String, Category> updatedMap = {};
+
+    originalMap.forEach((key, value) {
+      if (key == oldKey) {
+        // Update category id
+        value.id = newKey;
+        // update each task in that category
+        for (Task task in value.taskList) {
+          task.categoryId = newKey;
+        }
+        updatedMap[newKey] = value;
+      } else {
+        updatedMap[key] = value;
+      }
+    });
+
+    return updatedMap;
   }
 
   void _deleteCategory(String name) {
