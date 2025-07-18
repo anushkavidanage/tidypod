@@ -24,7 +24,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:appflowy_board/appflowy_board.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tidypod/models/responsive.dart';
 
 import 'package:tidypod/models/task.dart';
 import 'package:tidypod/models/kanban_board.dart';
@@ -38,25 +38,28 @@ import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/api/rest_api.dart';
 
-class KanbanView extends ConsumerStatefulWidget {
+class KanbanView extends StatefulWidget {
   const KanbanView({super.key});
 
   @override
   KanbanViewState createState() => KanbanViewState();
 }
 
-class KanbanViewState extends ConsumerState<KanbanView> {
-  late AppFlowyBoardScrollController boardScrollController;
-  late ScrollController scrollController;
+class KanbanViewState extends State<KanbanView> {
+  late AppFlowyBoardScrollController _boardScrollController;
+  late ScrollController _scrollController;
+  AppFlowyBoardController? _boardController;
   var _categories = <String, Category>{};
   static Future? _asyncDataFetch;
 
   @override
   void initState() {
-    boardScrollController = AppFlowyBoardScrollController();
-    scrollController = ScrollController();
-    _asyncDataFetch = _loadTasks();
     super.initState();
+    _boardController?.dispose();
+    _boardController = createBoardController();
+    _boardScrollController = AppFlowyBoardScrollController();
+    _scrollController = ScrollController();
+    _asyncDataFetch = _loadTasks();
   }
 
   Future<Map<String, Category>> _loadTasks() async {
@@ -90,9 +93,8 @@ class KanbanViewState extends ConsumerState<KanbanView> {
     } else if (dataSyncStaus == DataSyncStatus.serverahead) {
       loadedTasks = await loadServerTaskData(context, KanbanView());
     }
-
     for (Category category in loadedTasks.categories.values) {
-      boardController.addGroup(
+      _boardController!.addGroup(
         AppFlowyGroupData(
           id: category.id,
           name: category.id,
@@ -100,9 +102,7 @@ class KanbanViewState extends ConsumerState<KanbanView> {
         ),
       );
     }
-    setState(() {
-      _categories = loadedTasks.categories;
-    });
+    _categories = loadedTasks.categories;
 
     return loadedTasks.categories;
   }
@@ -113,6 +113,7 @@ class KanbanViewState extends ConsumerState<KanbanView> {
       groupCornerRadius: 20,
       stretchGroupHeight: false,
     );
+    _categories = categoriesMap;
     return Scaffold(
       appBar: AppBar(
         title: Text('Kanban board', style: TextStyle(fontSize: 20)),
@@ -133,7 +134,7 @@ class KanbanViewState extends ConsumerState<KanbanView> {
                   ElevatedButton(
                     onPressed: () async {
                       for (Category category in sampleCategories.values) {
-                        boardController.addGroup(
+                        _boardController!.addGroup(
                           AppFlowyGroupData(
                             id: category.id,
                             name: category.id,
@@ -154,12 +155,12 @@ class KanbanViewState extends ConsumerState<KanbanView> {
               ),
             )
           : Scrollbar(
-              controller: scrollController,
+              controller: _scrollController,
               thumbVisibility: true,
               child: Container(
                 padding: EdgeInsets.all(10),
                 child: AppFlowyBoard(
-                  controller: boardController,
+                  controller: _boardController!,
                   cardBuilder: (context, group, groupItem) {
                     return AppFlowyGroupCard(
                       key: ValueKey(groupItem.id),
@@ -174,8 +175,8 @@ class KanbanViewState extends ConsumerState<KanbanView> {
                       child: _buildCard(groupItem),
                     );
                   },
-                  scrollController: scrollController,
-                  boardScrollController: boardScrollController,
+                  scrollController: _scrollController,
+                  boardScrollController: _boardScrollController,
                   footerBuilder: (context, group) {
                     return AppFlowyGroupFooter(
                       icon: const Icon(Icons.add, size: 20, color: darkBlue),
@@ -224,19 +225,19 @@ class KanbanViewState extends ConsumerState<KanbanView> {
                       },
                     );
                   },
-                  groupConstraints: screenWidth(context) > 1175
+                  groupConstraints: Responsive.isLargeDesktop(context)
                       ? BoxConstraints.tightFor(
                           width: screenWidth(context) / 4,
                           height: screenHeight(context),
                         )
-                      : screenWidth(context) > 768
+                      : Responsive.isDesktop(context)
                       ? BoxConstraints.tightFor(
                           width: screenWidth(context) / 3,
                           height: screenHeight(context),
                         )
-                      : screenWidth(context) > 480
+                      : Responsive.isTablet(context)
                       ? BoxConstraints.tightFor(
-                          width: 300,
+                          width: screenWidth(context) / 2,
                           height: screenHeight(context),
                         )
                       : BoxConstraints.tightFor(
@@ -517,7 +518,7 @@ class KanbanViewState extends ConsumerState<KanbanView> {
     );
 
     setState(() {
-      boardController.addGroup(category);
+      _boardController!.addGroup(category);
       _categories[name] = localCategory;
     });
     await TaskStorage.saveTasks(_categories);
@@ -527,8 +528,8 @@ class KanbanViewState extends ConsumerState<KanbanView> {
     _categories = updateMapKeyPreserveOrder(_categories, name, newName);
 
     // Update the board conroller
-    boardController.removeGroup(name);
-    boardController.insertGroup(
+    _boardController!.removeGroup(name);
+    _boardController!.insertGroup(
       _categories.keys.toList().indexOf(newName),
       AppFlowyGroupData(
         id: newName,
@@ -569,7 +570,7 @@ class KanbanViewState extends ConsumerState<KanbanView> {
   void _deleteCategory(String name) {
     // Delete the category as well as the associated tasks
     setState(() {
-      boardController.removeGroup(name);
+      _boardController!.removeGroup(name);
       _categories.remove(name);
     });
     // Update the task storage
@@ -588,7 +589,7 @@ class KanbanViewState extends ConsumerState<KanbanView> {
     setState(() {
       _categories[categoryId]?.taskList.add(task);
     });
-    boardController.addGroupItem(categoryId, task);
+    _boardController!.addGroupItem(categoryId, task);
     await TaskStorage.saveTasks(_categories);
   }
 
@@ -613,11 +614,17 @@ class KanbanViewState extends ConsumerState<KanbanView> {
     setState(() {
       _categories[task.categoryId]?.taskList.remove(task);
     });
-    boardController.removeGroupItem(task.categoryId, task.id);
+    _boardController!.removeGroupItem(task.categoryId, task.id);
     TaskStorage.saveTasks(_categories);
     // flutterLocalNotificationsPlugin.cancel(
     //   task.title.hashCode,
     // ); // Cancel notification
+  }
+
+  @override
+  void dispose() {
+    _boardController?.dispose();
+    super.dispose();
   }
 
   @override

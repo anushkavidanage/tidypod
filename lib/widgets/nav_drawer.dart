@@ -88,11 +88,31 @@ class NavDrawer extends StatelessWidget {
                   leading: const Icon(Icons.view_kanban_outlined),
                   title: const Text('Kanban View'),
                   onTap: () => onMenuSelect(KanbanView()),
+                  // onTap: () {
+                  //   Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => AppScreen(childPage: Page2View()),
+                  //     ),
+                  //     (Route<dynamic> route) =>
+                  //         false, // This predicate ensures all previous routes are removed
+                  //   );
+                  // },
                 ),
                 ListTile(
                   leading: const Icon(Icons.tab_outlined),
                   title: const Text('Tab View'),
                   onTap: () => onMenuSelect(TabView()),
+                  // onTap: () {
+                  //   Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => AppScreen(childPage: Page1View()),
+                  //     ),
+                  //     (Route<dynamic> route) =>
+                  //         false, // This predicate ensures all previous routes are removed
+                  //   );
+                  // },
                 ),
                 ListTile(
                   leading: const Icon(

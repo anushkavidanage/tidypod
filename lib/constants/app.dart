@@ -32,4 +32,3 @@ const String updateTimeLabel = 'lastUpdated';
 
 double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
 double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
-const double desktopWidthThreshold = 960;

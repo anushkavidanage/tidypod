@@ -27,6 +27,10 @@ import 'package:flutter/material.dart';
 
 import 'package:tidypod/constants/app.dart';
 
+const double desktopWidthThreshold = 1280;
+const double tabletWidthThreshold = 760;
+const double mobileWidthThreshold = 480;
+
 class Responsive extends StatelessWidget {
   final Widget mobile;
   final Widget tablet;
@@ -42,16 +46,18 @@ class Responsive extends StatelessWidget {
   });
 
   static bool isMobile(BuildContext context) =>
-      screenWidth(context) < desktopWidthThreshold;
+      screenWidth(context) < mobileWidthThreshold;
 
   static bool isTablet(BuildContext context) =>
-      screenWidth(context) < 1100 && screenWidth(context) >= 960;
+      screenWidth(context) < tabletWidthThreshold &&
+      screenWidth(context) >= mobileWidthThreshold;
 
   static bool isDesktop(BuildContext context) =>
-      screenWidth(context) >= desktopWidthThreshold;
+      screenWidth(context) < desktopWidthThreshold &&
+      screenWidth(context) >= tabletWidthThreshold;
 
   static bool isLargeDesktop(BuildContext context) =>
-      screenWidth(context) >= 1200;
+      screenWidth(context) >= desktopWidthThreshold;
 
   @override
   Widget build(BuildContext context) {

@@ -25,15 +25,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:solidpod/solidpod.dart';
 import 'package:version_widget/version_widget.dart';
 
-import 'package:tidypod/kanban_view.dart';
 import 'package:tidypod/widgets/data_sync_icon.dart';
 import 'package:tidypod/widgets/nav_drawer.dart';
 
-class AppScreen extends ConsumerStatefulWidget {
+class AppScreen extends StatefulWidget {
   /// Initialise widget variables.
   const AppScreen({super.key, required this.childPage, this.title = ''});
 
@@ -44,18 +42,19 @@ class AppScreen extends ConsumerStatefulWidget {
   AppScreenState createState() => AppScreenState();
 }
 
-class AppScreenState extends ConsumerState<AppScreen>
+class AppScreenState extends State<AppScreen>
     with SingleTickerProviderStateMixin {
   String? _webId;
 
   String _appVersion = '';
 
-  Widget _selectedWidget = KanbanView(); // default view
+  late Widget _selectedWidget; // default view
 
   @override
   void initState() {
     super.initState();
     _loadAppInfo();
+    _selectedWidget = widget.childPage;
   }
 
   /// Loads the app name and version from package_info_plus.
@@ -69,7 +68,7 @@ class AppScreenState extends ConsumerState<AppScreen>
     }
   }
 
-  void _selectWidget(Widget widget) {
+  void selectWidget(Widget widget) {
     setState(() {
       _selectedWidget = widget;
     });
@@ -128,7 +127,7 @@ class AppScreenState extends ConsumerState<AppScreen>
           const SizedBox(width: 10),
         ],
       ),
-      drawer: NavDrawer(webId: _webId ?? '', onMenuSelect: _selectWidget),
+      drawer: NavDrawer(webId: _webId ?? '', onMenuSelect: selectWidget),
 
       body: _selectedWidget,
     );

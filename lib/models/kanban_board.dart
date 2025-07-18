@@ -28,76 +28,78 @@ import 'package:appflowy_board/appflowy_board.dart';
 import 'package:tidypod/models/category.dart';
 import 'package:tidypod/utils/task_storage.dart';
 
-final AppFlowyBoardController boardController = AppFlowyBoardController(
-  onMoveGroup: (fromGroupId, fromIndex, toGroupId, toIndex) async {
-    LoadedTasks loadedTasks = await TaskStorage.loadTasks();
-    var categories = loadedTasks.categories;
+AppFlowyBoardController createBoardController() {
+  return AppFlowyBoardController(
+    onMoveGroup: (fromGroupId, fromIndex, toGroupId, toIndex) async {
+      LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+      var categories = loadedTasks.categories;
 
-    // Convert to a list
-    List categoryList = [];
-    categories.forEach((k, v) => categoryList.add([k, v]));
+      // Convert to a list
+      List categoryList = [];
+      categories.forEach((k, v) => categoryList.add([k, v]));
 
-    // Remove and add items from and to list
-    var categoryData = categoryList.removeAt(fromIndex);
-    categoryData.last.updatedTime = DateTime.now(); // Update time
-    categoryList.insert(toIndex, categoryData);
+      // Remove and add items from and to list
+      var categoryData = categoryList.removeAt(fromIndex);
+      categoryData.last.updatedTime = DateTime.now(); // Update time
+      categoryList.insert(toIndex, categoryData);
 
-    // Create a new category map
-    Map<String, Category> newCategories = {};
-    for (var element in categoryList) {
-      newCategories[element.first] = element.last;
-    }
+      // Create a new category map
+      Map<String, Category> newCategories = {};
+      for (var element in categoryList) {
+        newCategories[element.first] = element.last;
+      }
 
-    // Update the local storage
-    await TaskStorage.saveTasks(newCategories);
-    debugPrint('Move item from $fromIndex to $toIndex');
-  },
-  onMoveGroupItem: (groupId, fromIndex, toIndex) async {
-    LoadedTasks loadedTasks = await TaskStorage.loadTasks();
-    var categories = loadedTasks.categories;
+      // Update the local storage
+      await TaskStorage.saveTasks(newCategories);
+      debugPrint('Move item from $fromIndex to $toIndex');
+    },
+    onMoveGroupItem: (groupId, fromIndex, toIndex) async {
+      LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+      var categories = loadedTasks.categories;
 
-    // Get the category
-    var category = categories[groupId];
-    category?.updatedTime = DateTime.now(); // Update time
+      // Get the category
+      var category = categories[groupId];
+      category?.updatedTime = DateTime.now(); // Update time
 
-    // Update the task list
-    final task = category?.taskList.removeAt(fromIndex);
-    category?.taskList.insert(toIndex, task!);
+      // Update the task list
+      final task = category?.taskList.removeAt(fromIndex);
+      category?.taskList.insert(toIndex, task!);
 
-    categories[groupId] = category!;
+      categories[groupId] = category!;
 
-    // Update the local storage
-    await TaskStorage.saveTasks(categories);
+      // Update the local storage
+      await TaskStorage.saveTasks(categories);
 
-    debugPrint('Move $groupId:$fromIndex to $groupId:$toIndex');
-  },
-  onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) async {
-    LoadedTasks loadedTasks = await TaskStorage.loadTasks();
-    var categories = loadedTasks.categories;
+      debugPrint('Move $groupId:$fromIndex to $groupId:$toIndex');
+    },
+    onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) async {
+      LoadedTasks loadedTasks = await TaskStorage.loadTasks();
+      var categories = loadedTasks.categories;
 
-    // Get the categories
-    var removingCategory = categories[fromGroupId];
-    var insertingCategory = categories[toGroupId];
+      // Get the categories
+      var removingCategory = categories[fromGroupId];
+      var insertingCategory = categories[toGroupId];
 
-    removingCategory?.updatedTime = DateTime.now(); // Update time
-    insertingCategory?.updatedTime = DateTime.now(); // Update time
+      removingCategory?.updatedTime = DateTime.now(); // Update time
+      insertingCategory?.updatedTime = DateTime.now(); // Update time
 
-    // Remove the task from the removing category
-    final task = removingCategory?.taskList.removeAt(fromIndex);
+      // Remove the task from the removing category
+      final task = removingCategory?.taskList.removeAt(fromIndex);
 
-    // Update the task category id
-    task?.categoryId = toGroupId;
+      // Update the task category id
+      task?.categoryId = toGroupId;
 
-    // Insert the task to the inserting category
-    insertingCategory?.taskList.insert(toIndex, task!);
+      // Insert the task to the inserting category
+      insertingCategory?.taskList.insert(toIndex, task!);
 
-    // Update the overall category map
-    categories[fromGroupId] = removingCategory!;
-    categories[toGroupId] = insertingCategory!;
+      // Update the overall category map
+      categories[fromGroupId] = removingCategory!;
+      categories[toGroupId] = insertingCategory!;
 
-    // Update the local storage
-    await TaskStorage.saveTasks(categories);
+      // Update the local storage
+      await TaskStorage.saveTasks(categories);
 
-    debugPrint('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
-  },
-);
+      debugPrint('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
+    },
+  );
+}

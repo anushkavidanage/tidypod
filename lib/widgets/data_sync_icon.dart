@@ -60,7 +60,7 @@ class DataSyncIconState extends ConsumerState<DataSyncIcon> {
       showSyncStatus = true;
     });
     Timer.periodic(Duration(seconds: waitSeconds), (Timer timer) {
-      syncTaskDataProcess(context, DataSyncIcon(), ref);
+      // syncTaskDataProcess(context, DataSyncIcon(), ref);
       print('running');
     });
   }
