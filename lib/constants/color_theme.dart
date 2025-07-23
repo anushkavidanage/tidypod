@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 const brightOrange = Color(0xFFf59a48);
 const lightOrange = Color(0xFFfbd6b6);
 const darkRed = Color(0xFF901930);
+const brightRed = Color(0xFFe50000);
 const brightYellow = Color(0xFFf8d23a);
 const lightBlue = Color(0xFF5dbfcf);
 const darkBlue = Color(0xFF30465d);

@@ -45,6 +45,29 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
+  bool isDueFlag = false;
+  String overdueText = '';
+
+  @override
+  void initState() {
+    if (widget.task.dueDate != null) {
+      isDue(widget.task.dueDate!);
+    }
+    super.initState();
+  }
+
+  void isDue(DateTime givenDate) {
+    Duration difference = givenDate.difference(DateTime.now());
+
+    if (difference.inDays <= 3 && difference.inDays >= 0) {
+      overdueText = 'Due in less than three days';
+      isDueFlag = true;
+    } else if (difference.inDays < 0) {
+      overdueText = 'Overdue';
+      isDueFlag = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -130,6 +153,23 @@ class _TaskCardState extends State<TaskCard> {
                   ),
                 ),
               ),
+              if (isDueFlag && !widget.task.isDone) ...[
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 4.0),
+                  child: Text(
+                    overdueText,
+                    // style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: brightRed,
+                      fontWeight: FontWeight.w500,
+                      decoration: widget.task.isDone
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ],
         ),
