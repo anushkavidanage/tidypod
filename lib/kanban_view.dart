@@ -24,8 +24,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:appflowy_board/appflowy_board.dart';
-import 'package:tidypod/models/responsive.dart';
 
+import 'package:tidypod/models/responsive.dart';
 import 'package:tidypod/models/task.dart';
 import 'package:tidypod/models/kanban_board.dart';
 import 'package:tidypod/models/category.dart';
@@ -113,7 +113,6 @@ class KanbanViewState extends State<KanbanView> {
       groupCornerRadius: 20,
       stretchGroupHeight: false,
     );
-    _categories = categoriesMap;
     return Scaffold(
       appBar: AppBar(
         title: Text('Kanban board', style: TextStyle(fontSize: 20)),
@@ -144,10 +143,10 @@ class KanbanViewState extends State<KanbanView> {
                           ),
                         );
                       }
-                      setState(() {
-                        _categories = sampleCategories;
-                      });
-                      TaskStorage.saveTasks(_categories);
+
+                      _categories = sampleCategories;
+                      await TaskStorage.saveTasks(_categories);
+                      setState(() {});
                     },
                     child: Text('Load sample tasks'),
                   ),

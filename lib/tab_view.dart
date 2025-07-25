@@ -70,7 +70,6 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     }, <String, Category>{});
 
     var dataSyncStaus = await checkDataInSync(context, TabView());
-    print(dataSyncStaus);
     if (dataSyncStaus == DataSyncStatus.insync ||
         dataSyncStaus == DataSyncStatus.clientahead) {
       loadedTasks = await TaskStorage.loadTasks();
@@ -723,7 +722,6 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
   // @override
   // Widget build(BuildContext context) {
   _buildTabPage(BuildContext context, Map<String, Category> categoriesMap) {
-    _categories = categoriesMap;
     if (_categories.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text("Tab View")),
