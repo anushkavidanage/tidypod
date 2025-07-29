@@ -79,7 +79,7 @@ Widget buildSolidLogin() {
   return Builder(
     builder: (context) {
       return SolidLogin(
-        required: false,
+        required: true,
         title: 'TIDY POD',
         appDirectory: 'tidypod',
         webID: serverUrl,

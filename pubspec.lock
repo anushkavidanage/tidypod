@@ -758,10 +758,10 @@ packages:
     dependency: "direct main"
     description:
       name: solidpod
-      sha256: "755edc6e9031d68aa55defe5c1090a21fea8edf60b2e42d0f856e8574c98287b"
+      sha256: "93779603d38732f382c2a27793695e83893c7b3acd3b47a1c8cf8f0adb4abc3a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.2"
+    version: "0.7.4"
   source_span:
     dependency: transitive
     description:
