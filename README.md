@@ -29,7 +29,7 @@ full control over your data, not the app developer or anyone else.
 
 This app is build as part of a suite of demonstrator apps developed 
 by the research team at the [ANU Software Innovation Institute](https://sii.anu.edu.au) 
-(SII). To accessmore apps like this using Solid Pod technology 
+(SII). To access more apps like this using Solid Pod technology 
 please go to [Solid Community AU](https://solidcommunity.au/) website.
 
 
