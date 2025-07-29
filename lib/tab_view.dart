@@ -57,6 +57,7 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
   var _categories = <String, Category>{};
   static Future? _asyncDataFetch;
   bool _isControllerReady = false;
+  String overdueText = '';
 
   @override
   void initState() {
@@ -344,6 +345,20 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
     );
   }
 
+  bool isDue(DateTime givenDate) {
+    Duration difference = givenDate.difference(DateTime.now());
+
+    if (difference.inDays <= 3 && difference.inDays >= 0) {
+      overdueText = 'Due in less than three days';
+      return true;
+    } else if (difference.inDays < 0) {
+      overdueText = 'Overdue';
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Widget _buildReorderableList(String key) {
     final category = _categories[key];
 
@@ -387,17 +402,39 @@ class TabViewState extends State<TabView> with TickerProviderStateMixin {
                       ),
                     ),
                     subtitle: task.dueDate != null
-                        ? Text(
-                            'Due: ${getDateTimeStr(task.dueDate!, formatType: DateFormatType.longDate)}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: task.isDone
-                                  ? Colors.grey
-                                  : Colors.grey[600],
-                              decoration: task.isDone
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none,
-                            ),
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Due: ${getDateTimeStr(task.dueDate!, formatType: DateFormatType.longDate)}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: task.isDone
+                                      ? Colors.grey
+                                      : Colors.grey[600],
+                                  decoration: task.isDone
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
+                                ),
+                              ),
+                              if (isDue(task.dueDate!) && !task.isDone) ...[
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    overdueText,
+                                    // style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: brightRed,
+                                      fontWeight: FontWeight.w500,
+                                      decoration: task.isDone
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           )
                         : null,
                     contentPadding: EdgeInsets.symmetric(
