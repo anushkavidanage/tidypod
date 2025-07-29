@@ -38,6 +38,11 @@ import 'package:tidypod/utils/task_storage.dart';
 // in server with the local data.
 bool isLocalChanged = true;
 
+// Global parameter to keep track of logout. If logout is pressed
+// this flag is set to true and the background synching process
+// will stop.
+bool isLogoutPressed = false;
+
 // Globala parameter for the number of seconds to wait until to check
 // changes in data
 int waitSeconds = 10;

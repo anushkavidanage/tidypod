@@ -60,10 +60,18 @@ class DataSyncIconState extends ConsumerState<DataSyncIcon> {
       showSyncStatus = true;
     });
     Timer.periodic(Duration(seconds: waitSeconds), (Timer timer) {
+      // Step 2: Check your condition here
+      if (shouldStop()) {
+        debugPrint("Stopping background synching");
+        timer.cancel(); // Stops the periodic timer
+      }
+
       syncTaskDataProcess(context, DataSyncIcon(), ref);
-      print('running');
+      debugPrint('Running background synching');
     });
   }
+
+  bool shouldStop() => isLogoutPressed;
 
   @override
   Widget build(BuildContext context) {

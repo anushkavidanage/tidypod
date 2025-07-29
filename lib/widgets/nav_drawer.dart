@@ -29,6 +29,7 @@ import 'package:solidpod/solidpod.dart';
 import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/kanban_view.dart';
 import 'package:tidypod/main.dart';
+import 'package:tidypod/utils/data_sync_process.dart';
 import 'package:tidypod/utils/misc.dart';
 import 'package:tidypod/tab_view.dart';
 
@@ -144,6 +145,7 @@ class NavDrawer extends StatelessWidget {
                       : () async {
                           // Then direct to logout popup
                           await logoutPopup(context, const TidyPod());
+                          isLogoutPressed = true;
                         },
                 ),
                 const Divider(color: lightGrey),
