@@ -45,7 +45,8 @@ or any one of the available [Pod
 Providers](https://solidproject.org/users/get-a-pod) world wide.
 
 ### Install the App Locally
-_installers coming soon_
+
+Download the latest version: Windows: [exe](https://github.com/anushkavidanage/tidypod/blob/main/installers/tidypod-v0.1-windows.exe), Android: [apk](https://github.com/anushkavidanage/tidypod/blob/main/installers/tidypod-v0.1-android.apk)
 
 ### Usage
 
