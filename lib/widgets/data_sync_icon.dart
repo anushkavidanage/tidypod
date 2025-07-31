@@ -55,7 +55,7 @@ class DataSyncIconState extends ConsumerState<DataSyncIcon> {
   void _syncTasksLoop() async {
     // Simulate a network call or delay
     // Wait for three seconds so the widget tree is fully build
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 2));
     setState(() {
       showSyncStatus = true;
     });

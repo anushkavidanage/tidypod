@@ -45,7 +45,7 @@ bool isLogoutPressed = false;
 
 // Globala parameter for the number of seconds to wait until to check
 // changes in data
-int waitSeconds = 10;
+int waitSeconds = 5;
 
 // Enum for data sync status
 enum DataSyncStatus {
