@@ -26,6 +26,9 @@ au](https://solidcommunity.au/docs/notepod) -->
 
 ## 0.1 Initial version of the app
 
++ Synch duration to 5 seconds [0.1.9 anushkavid 20250801]
++ Android build changes [0.1.8 anushkavid 20250731]
++ Due date warning to Tab view [0.1.7 anushkavid 20250729]
 + Load sample tasks [0.1.6 anushkavid 20250725]
 + Add mobile view [0.1.5 anushkavid 20250718]
 + Local storage option [0.1.4 anushkavid 20250716]
