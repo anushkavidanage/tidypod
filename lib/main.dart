@@ -85,7 +85,7 @@ Widget buildSolidLogin() {
         webID: serverUrl,
         image: const AssetImage('assets/images/tidypod_image.jpg'),
         logo: const AssetImage('assets/images/tidypod_logo.png'),
-        link: 'https://github.com/anusii/healthpod/blob/main/README.md',
+        link: 'https://github.com/anushkavidanage/tidypod/blob/main/README.md',
         loginButtonStyle: LoginButtonStyle(background: brightYellow),
         infoButtonStyle: InfoButtonStyle(background: lightBlue),
         child: AppScreen(
