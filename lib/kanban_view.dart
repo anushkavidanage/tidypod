@@ -224,23 +224,37 @@ class KanbanViewState extends State<KanbanView> {
                       },
                     );
                   },
-                  groupConstraints: Responsive.isLargeDesktop(context)
+                  // av: Custom width for each screen size does not look good.
+                  //     Specific size would be better
+                  // groupConstraints: Responsive.isLargeDesktop(context)
+                  //     ? BoxConstraints.tightFor(
+                  //         width: screenWidth(context) / 4,
+                  //         height: screenHeight(context),
+                  //       )
+                  //     : Responsive.isDesktop(context)
+                  //     ? BoxConstraints.tightFor(
+                  //         width: screenWidth(context) / 3,
+                  //         height: screenHeight(context),
+                  //       )
+                  //     : Responsive.isTablet(context)
+                  //     ? BoxConstraints.tightFor(
+                  //         width: screenWidth(context) / 2,
+                  //         height: screenHeight(context),
+                  //       )
+                  //     : BoxConstraints.tightFor(
+                  //         width: 280,
+                  //         height: screenHeight(context),
+                  // ),
+                  groupConstraints:
+                      (Responsive.isLargeDesktop(context) ||
+                          Responsive.isDesktop(context) ||
+                          Responsive.isTablet(context))
                       ? BoxConstraints.tightFor(
-                          width: screenWidth(context) / 4,
-                          height: screenHeight(context),
-                        )
-                      : Responsive.isDesktop(context)
-                      ? BoxConstraints.tightFor(
-                          width: screenWidth(context) / 3,
-                          height: screenHeight(context),
-                        )
-                      : Responsive.isTablet(context)
-                      ? BoxConstraints.tightFor(
-                          width: screenWidth(context) / 2,
+                          width: 320,
                           height: screenHeight(context),
                         )
                       : BoxConstraints.tightFor(
-                          width: 300,
+                          width: 280,
                           height: screenHeight(context),
                         ),
                   config: config,
@@ -448,25 +462,40 @@ class KanbanViewState extends State<KanbanView> {
                     controller: titleController,
                     decoration: InputDecoration(labelText: 'Task Title'),
                   ),
-
                   SizedBox(height: 15),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2100),
-                      );
-                      if (pickedDate != null) {
-                        setState(() => selectedDate = pickedDate);
-                      }
-                    },
-                    child: Text(
-                      selectedDate == null
-                          ? 'Pick Due Date (optional)'
-                          : 'Due: ${selectedDate!.toLocal().toString().split(' ')[0]}',
-                    ),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          final pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2100),
+                          );
+                          if (pickedDate != null) {
+                            setState(() => selectedDate = pickedDate);
+                          }
+                        },
+                        child: Text(
+                          selectedDate == null
+                              ? 'Pick Due Date (optional)'
+                              : 'Due: ${selectedDate!.toLocal().toString().split(' ')[0]}',
+                        ),
+                      ),
+                      if (selectedDate != null) ...[
+                        SizedBox(width: 10),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          iconSize: 25.0,
+                          color: darkRed,
+                          tooltip: 'Remove due date',
+                          onPressed: () {
+                            setState(() => selectedDate = null);
+                          },
+                        ),
+                      ],
+                    ],
                   ),
                   SizedBox(height: 15),
                   Text(
