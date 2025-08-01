@@ -382,23 +382,39 @@ class KanbanViewState extends State<KanbanView> {
                 ),
                 SizedBox(height: 15),
 
-                ElevatedButton(
-                  onPressed: () async {
-                    final pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2100),
-                    );
-                    if (pickedDate != null) {
-                      setState(() => selectedDate = pickedDate);
-                    }
-                  },
-                  child: Text(
-                    selectedDate == null
-                        ? 'Pick Due Date (optional)'
-                        : 'Due: ${selectedDate!.toLocal().toString().split(' ')[0]}',
-                  ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        final pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          setState(() => selectedDate = pickedDate);
+                        }
+                      },
+                      child: Text(
+                        selectedDate == null
+                            ? 'Pick Due Date (optional)'
+                            : 'Due: ${selectedDate!.toLocal().toString().split(' ')[0]}',
+                      ),
+                    ),
+                    if (selectedDate != null) ...[
+                      SizedBox(width: 10),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        iconSize: 25.0,
+                        color: darkRed,
+                        tooltip: 'Remove due date',
+                        onPressed: () {
+                          setState(() => selectedDate = null);
+                        },
+                      ),
+                    ],
+                  ],
                 ),
                 SizedBox(height: 15),
                 Text(
