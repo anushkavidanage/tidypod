@@ -21,8 +21,5 @@
 //
 // Authors: Anushka Vidanage
 
-// Profile card constant
-const String profCard = 'profile/card#me';
-
 // Task file
 const String myTasksFile = 'mytasks.ttl';
