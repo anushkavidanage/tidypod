@@ -44,11 +44,12 @@ dependencies:
   http: ^1.4.0
   internet_connection_checker: ^3.0.1
   intl: ^0.20.2
-  package_info_plus: ^8.3.0
+  package_info_plus: ^9.0.0
   shared_preferences: ^2.2.2
-  solidpod: ^0.7.13
+  solidpod: ^0.9.12
   # solidpod:
   #   path: ../solidpod
+  solidui: ^0.0.25
   timezone: ^0.9.4
   version_widget: ^1.0.2
 

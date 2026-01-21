@@ -24,7 +24,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:solidpod/solidpod.dart';
+import 'package:solidui/solidui.dart'
+    show SolidLogin, LoginButtonStyle, InfoButtonStyle;
 
 import 'package:tidypod/app_screen.dart';
 import 'package:tidypod/constants/app.dart';

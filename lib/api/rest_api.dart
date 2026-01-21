@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:solidpod/solidpod.dart';
+import 'package:solidui/solidui.dart';
 
 import 'package:tidypod/constants/app.dart';
 import 'package:tidypod/constants/turtle_structures.dart';
@@ -50,6 +51,10 @@ Future<LoadedTasks> loadServerTaskData(
   String taskJsonStr = '';
 
   if (loggedIn) {
+    if (context.mounted) {
+      await getKeyFromUserIfRequired(context, childPage);
+    }
+
     final dataDirPath = await getDataDirPath();
     final dataDirUrl = await getDirUrl(dataDirPath);
     final taskFileUrl = dataDirUrl + myTasksFile;
@@ -57,11 +62,7 @@ Future<LoadedTasks> loadServerTaskData(
     bool resExist = await checkResourceStatus(taskFileUrl);
 
     if (resExist) {
-      taskJsonStr = await readPod(
-        taskFileUrl.replaceAll(webId, ''),
-        context,
-        childPage,
-      );
+      taskJsonStr = await readPod(myTasksFile);
     }
   }
 
@@ -102,20 +103,14 @@ Future<bool> saveServerTaskData(
     // final dataDirUrl = await getDirUrl(dataDirPath);
     // final taskFileUrl = dataDirUrl + myTasksFile;
 
-    final writeDataStatus = await writePod(
+    await writePod(
       myTasksFile,
       taskJsonStr,
-      context,
-      childPage,
+      overwrite: true,
       // encrypted: false, // save in plain text for now
     );
 
-    if (writeDataStatus != SolidFunctionCallStatus.success) {
-      // throw Exception('Error occured. Please try again!');
-      return false;
-    } else {
-      return true;
-    }
+    return true;
   } else {
     return false;
   }

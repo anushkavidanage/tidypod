@@ -24,7 +24,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:solidpod/solidpod.dart';
+import 'package:solidui/solidui.dart';
 
 import 'package:tidypod/constants/color_theme.dart';
 import 'package:tidypod/kanban_view.dart';
