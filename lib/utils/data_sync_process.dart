@@ -123,7 +123,6 @@ Future<void> syncTaskDataProcess(
           context,
           childPage,
         );
-
         if (dataSyncStatus != DataSyncStatus.nodata) {
           dataSyncStateNotifier.setHasData(true);
 
