@@ -1,22 +1,7 @@
 name: tidypod
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
-version: 0.1.9+1
+version: 0.1.10
 
 environment:
   sdk: ^3.8.1
@@ -33,25 +18,25 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  animated_icon: ^0.0.9
+  animated_icon: ^1.0.0
   appflowy_board: ^0.1.2
-  connectivity_plus: ^6.1.4
-  cupertino_icons: ^1.0.8
+  connectivity_plus: ^6.1.1
+  cupertino_icons: ^1.0.9
   flutter_launcher_icons: ^0.14.4
   # flutter_local_notifications: ^16.3.2
   # flutter_native_timezone: ^2.0.0
-  flutter_riverpod: ^2.6.1
-  http: ^1.4.0
+  flutter_riverpod: ^3.3.1
+  http: ^1.6.0
   internet_connection_checker: ^3.0.1
   intl: ^0.20.2
   package_info_plus: ^9.0.0
-  shared_preferences: ^2.2.2
-  solidpod: ^0.9.12
+  shared_preferences: ^2.5.5
+  solidpod: ^0.12.4
   # solidpod:
   #   path: ../solidpod
-  solidui: ^0.0.25
-  timezone: ^0.9.4
-  version_widget: ^1.0.2
+  solidui: ^0.3.24
+  timezone: ^0.11.0
+  version_widget: ^1.0.6
 
 
 dev_dependencies:
